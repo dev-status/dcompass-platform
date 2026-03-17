@@ -1,0 +1,37 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "incremental": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@dcompass/auth": ["../../packages/auth/src"],
+      "@dcompass/auth/*": ["../../packages/auth/src/*"],
+      "@dcompass/config": ["../../packages/config/src"],
+      "@dcompass/config/*": ["../../packages/config/src/*"],
+      "@dcompass/db": ["../../packages/db/src"],
+      "@dcompass/db/*": ["../../packages/db/src/*"],
+      "@dcompass/domain": ["../../packages/domain/src"],
+      "@dcompass/domain/*": ["../../packages/domain/src/*"],
+      "@dcompass/ui": ["../../packages/ui/src"],
+      "@dcompass/ui/*": ["../../packages/ui/src/*"],
+      "@dcompass/validation": ["../../packages/validation/src"],
+      "@dcompass/validation/*": ["../../packages/validation/src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

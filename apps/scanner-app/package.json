@@ -1,0 +1,11 @@
+{
+  "name": "scanner-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/placeholder.js dev",
+    "build": "node scripts/placeholder.js build",
+    "lint": "node scripts/placeholder.js lint",
+    "typecheck": "node scripts/placeholder.js typecheck"
+  }
+}

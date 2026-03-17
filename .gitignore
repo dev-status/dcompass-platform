@@ -1,0 +1,19 @@
+node_modules
+.pnpm
+*.log
+.env
+.env.*
+.next
+out
+dist
+coverage
+.DS_Store
+.turbo
+apps/*/.next
+apps/*/node_modules
+packages/*/node_modules
+apps/*/.turbo
+packages/*/.turbo
+
+# TypeScript build cache
+*.tsbuildinfo

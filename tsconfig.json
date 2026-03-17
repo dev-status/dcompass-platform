@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "references": [
+    { "path": "apps/clients-web" },
+    { "path": "apps/partners-web" },
+    { "path": "apps/scanner-app" },
+    { "path": "packages/auth" },
+    { "path": "packages/config" },
+    { "path": "packages/db" },
+    { "path": "packages/domain" },
+    { "path": "packages/ui" },
+    { "path": "packages/validation" }
+  ]
+}
