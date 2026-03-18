@@ -17,6 +17,7 @@ const quickFilters = ["Hoy", "Esta semana", "CDMX", "DJ Sets", "Bar", "Live"];
 
 const events = [
   {
+    detailId: "nocturne-premiere",
     title: "Noches en Supra Roma",
     category: "DJ Set · Roma Norte",
     date: "Vie 22 Mar · 10:00 PM",
@@ -26,6 +27,7 @@ const events = [
     image: "/hero/hero-v2.png"
   },
   {
+    detailId: "campo-norte-residency",
     title: "Casa Aurora Sessions",
     category: "Live Set · Condesa",
     date: "Sáb 23 Mar · 9:30 PM",
@@ -35,6 +37,7 @@ const events = [
     image: "/hero/hero-v2.png"
   },
   {
+    detailId: "midnight-observatory",
     title: "Session 03 Juárez",
     category: "Bar Session · Juárez",
     date: "Jue 28 Mar · 8:30 PM",
@@ -44,6 +47,7 @@ const events = [
     image: "/hero/hero-v2.png"
   },
   {
+    detailId: "cumbre-de-gala",
     title: "Late Room Coyoacán",
     category: "Selector Night · Coyoacán",
     date: "Vie 29 Mar · 9:00 PM",
@@ -53,6 +57,7 @@ const events = [
     image: "/hero/hero-v2.png"
   },
   {
+    detailId: "midnight-observatory",
     title: "Azotea 9",
     category: "Rooftop Session · Juárez",
     date: "Sáb 30 Mar · 6:00 PM",
@@ -62,6 +67,7 @@ const events = [
     image: "/hero/hero-v2.png"
   },
   {
+    detailId: "cumbre-de-gala",
     title: "Room 12 After Hours",
     category: "Afterhours · Roma",
     date: "Dom 31 Mar · 1:00 AM",
@@ -251,7 +257,11 @@ export default function Page() {
 
                     <div className="flex items-center justify-between border-t border-white/10 pt-4">
                       <p className="text-sm font-medium text-white">{event.price}</p>
-                      <Link href="/events/demo" className="text-sm font-medium transition hover:text-white" style={{ color: colors.accent }}>
+                      <Link
+                        href={`/events/${event.detailId ?? "nocturne-premiere"}`}
+                        className="text-sm font-medium transition hover:text-white"
+                        style={{ color: colors.accent }}
+                      >
                         Ver evento
                       </Link>
                     </div>
