@@ -54,22 +54,24 @@ const typographyScale = [
 export default function Page() {
   return (
     <main className={styles.page}>
-      <HeroPanel
-        highlight="Sistema visual"
-        title="Base de diseño DCompass"
-        summary="Tokens, recursos y primitives premium para diseñar la experiencia antes de implementar los flujos de producto."
-        accent={colors.accent}
-        actions={[
-          { label: "Ver paleta", href: "#paleta", description: "Colors & surfaces", accent: "secondary" },
-          { label: "Explorar componentes", href: "#componentes", description: "Buttons, cards, inputs" }
-        ]}
-      >
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <StatusBadge label="Premium" tone="positive" />
-          <StatusBadge label="Dark luxury" tone="info" />
-          <StatusBadge label="Partners" tone="warning" />
-        </div>
-      </HeroPanel>
+      <div className={styles.heroSection}>
+        <HeroPanel
+          highlight="Sistema visual"
+          title="Base de diseño DCompass"
+          summary="Tokens, recursos y primitives premium para diseñar la experiencia antes de implementar los flujos de producto."
+          accent={colors.accent}
+          actions={[
+            { label: "Ver paleta", href: "#paleta", description: "Colors & surfaces", accent: "secondary" },
+            { label: "Explorar componentes", href: "#componentes", description: "Buttons, cards, inputs" }
+          ]}
+        >
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <StatusBadge label="Premium" tone="positive" />
+            <StatusBadge label="Dark luxury" tone="info" />
+            <StatusBadge label="Partners" tone="warning" />
+          </div>
+        </HeroPanel>
+      </div>
 
       <section className={`${styles.section} ${styles.split}`} id="paleta">
         <div>
