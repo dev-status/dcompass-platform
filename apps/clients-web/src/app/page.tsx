@@ -20,7 +20,7 @@ const heroStats = [
     icon: <FiUsers />
   },
   {
-    label: "Eventos en boarding",
+    label: "Eventos en preparación",
     value: "16",
     helper: "Calendario del segundo trimestre",
     delta: "+6 reservas",
@@ -266,7 +266,7 @@ export default function Home() {
               <SectionHeader
                 eyebrow="Descubrimiento"
                 title="Explora la experiencia digna de DCompass"
-                description="Paneles que mezclan historia, backstage y datos para que cada equipo entienda qué entregar y qué medir desde el primer momento."
+                description="Paneles que mezclan historia, tras bambalinas y datos para que cada equipo entienda qué entregar y qué medir desde el primer momento."
               />
               <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
                 Cada bloque informa qué debe entregar el backend: categorías, segmentos y activos.
