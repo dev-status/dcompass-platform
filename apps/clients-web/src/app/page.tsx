@@ -1,5 +1,7 @@
 import { Card, HeroPanel, SectionHeader, StatCard, StatusBadge } from "@dcompass/ui";
 import { FiArrowUpRight, FiBarChart2, FiClock, FiCompass, FiMapPin, FiUsers } from "react-icons/fi";
+import EventCard from "../components/EventCard";
+import { eventShowcase } from "../data/events";
 
 const navLinks = [
   { label: "Discovery", href: "#explore" },
@@ -71,6 +73,21 @@ const discoveryHighlights = [
   }
 ];
 
+const eventSignals = [
+  {
+    label: "Disponibilidad",
+    description: "Estados visibles desde el home: disponible, últimos boletos, agotado."
+  },
+  {
+    label: "Narrativa",
+    description: "Lineup, locación y precio se combinan para hablarle al cliente premium."
+  },
+  {
+    label: "Backend listo",
+    description: "Campos mínimos que el catálogo futuro deberá entregar sin sorpresas."
+  }
+];
+
 const discoveryPanels = [
   {
     title: "Curated journeys",
@@ -89,81 +106,6 @@ const discoveryPanels = [
     summary: "Expose partner-defined campuses, assets, and exclusive rituals in one surface.",
     tag: "Backstage",
     fields: ["partnerId", "venueIds", "story", "status", "images"]
-  }
-];
-
-const eventPreviews = [
-  {
-    title: "Nocturne Premiere",
-    subtitle: "Immersive dinner · Salon V, CDMX",
-    dateLabel: "Mar 28 · 20:00",
-    location: "Roma Norte · Mexico City",
-    priceRange: "$420 – $850 USD",
-    capacity: "120 seats",
-    lineup: ["Nina López · Live", "Resonant Choir", "DJ @alto"],
-    statusLabel: "Ticketing live",
-    statusTone: "positive" as const,
-    tags: ["lineup curated", "members only"],
-    backendFields: [
-      "id",
-      "slug",
-      "title",
-      "heroImage",
-      "lineup",
-      "priceRange",
-      "capacity",
-      "status",
-      "location",
-      "startTime"
-    ]
-  },
-  {
-    title: "Campo Norte Residency",
-    subtitle: "Alpine lounge · Monterrey",
-    dateLabel: "Apr 06 · 18:30",
-    location: "Valle de Chipinque",
-    priceRange: "$290 – $620 USD",
-    capacity: "220 seats",
-    lineup: ["Loom Ensemble", "Guitarría Collective"],
-    statusLabel: "Invites released",
-    statusTone: "info" as const,
-    tags: ["wellness", "private"],
-    backendFields: [
-      "id",
-      "slug",
-      "title",
-      "description",
-      "lineup",
-      "startTime",
-      "doors",
-      "priceRange",
-      "tags",
-      "status"
-    ]
-  },
-  {
-    title: "Midnight Observatory",
-    subtitle: "Rooftop set · Punta Mita",
-    dateLabel: "May 12 · 22:00",
-    location: "Punta Mita · Nayarit",
-    priceRange: "$520 – $980 USD",
-    capacity: "140 seats",
-    lineup: ["Orbit Duo", "Aura Strings"],
-    statusLabel: "Capacity capped",
-    statusTone: "warning" as const,
-    tags: ["travel", "members travel"],
-    backendFields: [
-      "id",
-      "slug",
-      "title",
-      "startTime",
-      "venue",
-      "priceRange",
-      "capacity",
-      "status",
-      "lineup",
-      "tags"
-    ]
   }
 ];
 
@@ -349,33 +291,45 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="events" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
-            <div className="flex flex-col gap-1.5">
+          <section id="events" className="space-y-6 scroll-mt-28 md:space-y-8 md:scroll-mt-36">
+            <div className="space-y-2">
               <SectionHeader
                 eyebrow="Experiencias"
-                title="Eventos destacados en camino"
-                description="Tarjetas con fecha, locación, lineups y rango de precios para mostrar qué datos pedir al backend sin abrir todavía el catálogo completo."
-                meta={<StatusBadge label="Sprint 00005" tone="info" />}
+                title="Eventos premium listos para convertir"
+                description="Un bloque formal de cards reutilizables que define la forma en la que DCompass comunica disponibilidad, lineups y precios sin salir del home."
+                meta={<StatusBadge label="Sprint 00008" tone="info" />}
               />
-              <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
+              <p className="max-w-3xl text-sm text-zinc-300">
+                Esta sección muestra lo que el backend deberá entregar: estados reales, narrativa de lineup, tags y precios desde el primer scroll. Cada card habla del evento como momento concreto, no como un banner efímero.
+              </p>
+              <div className="flex flex-wrap gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
                 <span className="flex items-center gap-1 text-white">
-                  <FiArrowUpRight className="text-xs" /> Insights en vivo
+                  <FiArrowUpRight className="text-xs" /> Discovery en marcha
                 </span>
-                <span>Rolling release</span>
+                <span>Disponibilidad palpable</span>
+                <span>Catálogo ready</span>
               </div>
             </div>
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-              <Card variant="glass" className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">
+              <Card variant="glass" className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Descubrimiento guiado</p>
-                    <h3 className="text-3xl font-semibold text-white">El home ya presenta eventos con contexto</h3>
+                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Block formal de eventos</p>
+                    <h3 className="text-3xl font-semibold text-white">Una narrativa premium con datos públicos</h3>
                   </div>
                   <StatusBadge label="Live mock" tone="positive" />
                 </div>
                 <p className="text-sm text-zinc-300 leading-relaxed">
-                  Este bloque resalta cómo un evento premium se comunica desde la portada: qué ocurre, quién lo protagoniza y por qué debe interesar. Los datos de backend se presentan junto con la narrativa para que el discovery sea tangible.
+                  Las cards deben contar historias creíbles: qué artistas, dónde, cuándo y cuánto, junto con la urgencia comercial. El backend future-ready ya sabe qué campos necesita porque los estamos exhibiendo con claridad aquí.
                 </p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {eventSignals.map((signal) => (
+                    <div key={signal.label} className="rounded-2xl border border-white/10 bg-[#01030f]/70 p-3">
+                      <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">{signal.label}</p>
+                      <p className="text-sm text-zinc-200 leading-relaxed">{signal.description}</p>
+                    </div>
+                  ))}
+                </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {discoveryHighlights.map((highlight) => (
                     <div key={highlight.label} className="rounded-2xl border border-white/10 bg-[#01030f]/70 p-3">
@@ -385,71 +339,22 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300">
-                  <a href="#events" className="font-semibold text-white">
-                    Explorar calendario
-                  </a>
-                  <span className="flex items-center gap-1 rounded-full border border-white/20 px-3 py-1">
-                    Insights · Story
-                  </span>
+                  <span className="font-semibold text-white">Reusabilidad</span>
+                  <span>Estados: disponible · últimos boletos · agotado</span>
+                  <span>Tags · lineup · price range</span>
                 </div>
               </Card>
-              <div className="space-y-4">
-                {eventPreviews.map((event) => (
-                  <Card key={event.title} variant="glass" className="space-y-4 p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{event.subtitle}</p>
-                        <h3 className="text-2xl font-semibold text-white">{event.title}</h3>
-                      </div>
-                      <StatusBadge label={event.statusLabel} tone={event.statusTone} />
-                    </div>
-                    <div className="space-y-1 text-sm text-zinc-300 leading-relaxed">
-                      <p className="flex items-center gap-2">
-                        <FiClock className="text-base" /> {event.dateLabel}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <FiMapPin className="text-base" /> {event.location}
-                      </p>
-                      <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Price range</p>
-                      <p className="text-lg font-semibold text-white">{event.priceRange}</p>
-                    </div>
-                    <div className="space-y-1 text-sm text-zinc-300 leading-relaxed">
-                      <p className="text-[0.65rem] uppercase tracking-[0.25em] text-zinc-400">Lineup</p>
-                      <ul className="space-y-1">
-                        {event.lineup.map((item) => (
-                          <li key={item} className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-white/70" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-[0.6rem] uppercase tracking-[0.25em] text-zinc-400">
-                      <span>{event.capacity}</span>
-                      {event.tags.map((tag) => (
-                        <span key={tag} className="rounded-full border border-white/10 px-3 py-1">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="space-y-1 rounded-2xl bg-white/5 p-3 text-[0.7rem] uppercase tracking-[0.25em] text-zinc-300">
-                      <p>Backend fields</p>
-                      <div className="flex flex-wrap gap-2">
-                        {event.backendFields.map((field) => (
-                          <span key={field} className="rounded-full border border-white/10 px-2 py-1">
-                            {field}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-[0.7rem] uppercase tracking-[0.3em] text-zinc-400">
-                      <span>Discovery ready</span>
-                      <a className="font-semibold text-white" href="mailto:contact@dcompass.dev">
-                        Solicitar acceso
-                      </a>
-                    </div>
-                  </Card>
-                ))}
+              <div className="space-y-6">
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                  {eventShowcase.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
+                  <span className="font-semibold text-white">Discovery + conversión</span>
+                  <span>Catálogo preparado</span>
+                  <span>Disponibilidad en vivo</span>
+                </div>
               </div>
             </div>
           </section>
