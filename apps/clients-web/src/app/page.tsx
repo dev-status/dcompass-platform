@@ -182,34 +182,34 @@ export default function Home() {
         <div className="absolute bottom-0 right-0 h-60 w-60 translate-x-1/3 translate-y-1/3 rounded-full bg-[radial-gradient(circle,_rgba(45,214,168,0.2),_transparent_70%)]" />
       </div>
       <div className="relative">
-        <header className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-6">
+        <header className="sticky top-0 z-30 mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 backdrop-blur-xl border-b border-white/10 bg-[#020308]/80 shadow-[0_20px_45px_rgba(0,0,0,0.65)] transition duration-200 md:gap-6">
           <div className="space-y-1">
             <p className="text-[0.65rem] uppercase tracking-[0.6em] text-zinc-500">DCompass</p>
             <p className="text-2xl font-semibold uppercase tracking-tight text-white">Clients Web</p>
           </div>
-          <nav className="hidden items-center gap-6 text-[0.65rem] uppercase tracking-[0.45em] text-zinc-400 md:flex">
+          <nav className="hidden items-center gap-5 text-[0.65rem] uppercase tracking-[0.32em] text-zinc-400 md:flex">
             {navLinks.map((link) => (
               <a key={link.label} href={link.href} className="transition hover:text-white">
                 {link.label}
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <a
               href="#explore"
-              className="hidden rounded-full border border-white/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.45em] text-white transition hover:border-white/70 md:inline-flex"
+              className="hidden rounded-full border border-white/30 px-3 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-white transition hover:border-white/70 md:inline-flex"
             >
               Explorar
             </a>
             <a
               href="#events"
-              className="rounded-full bg-gradient-to-r from-[#8a6bff] to-[#5fe3ff] px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.45em] text-black shadow-[0_10px_30px_rgba(58,180,255,0.4)]"
+              className="rounded-full bg-white/90 px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#020308] shadow-[0_18px_45px_rgba(2,8,16,0.6)] ring-1 ring-white/60 transition duration-200 hover:bg-white"
             >
               Solicitar acceso
             </a>
           </div>
         </header>
-        <main className="mx-auto max-w-6xl space-y-16 px-6 pb-16 pt-4">
+        <main className="mx-auto max-w-6xl space-y-12 px-6 pb-16 pt-6 md:space-y-14">
           <HeroPanel
             highlight="Clients Hub"
             title="Un centro premium para descubrir, invitar y vivir DCompass"
@@ -234,29 +234,29 @@ export default function Home() {
             </div>
           </HeroPanel>
 
-          <section id="explore" className="space-y-6">
-            <div className="flex flex-col gap-2">
+          <section id="explore" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
+            <div className="flex flex-col gap-1.5">
               <SectionHeader
                 eyebrow="Discovery"
                 title="Explora la experiencia digna de DCompass"
                 description="Paneles que mezclan historia, backstage, y datos para que cada equipo sepa qué ofrecer y qué medir."
               />
-              <p className="text-xs uppercase tracking-[0.4em] text-zinc-400">
+              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
                 Cada bloque informa qué debe entregar el backend: categorías, segmentos y activos.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {discoveryPanels.map((panel) => (
-                <Card key={panel.title} variant="glass" className="space-y-4">
+                <Card key={panel.title} variant="glass" className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-[0.4em] text-zinc-400">{panel.tag}</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{panel.tag}</p>
                     <StatusBadge label="Live mock" tone="info" />
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white">{panel.title}</h3>
                     <p className="text-sm text-zinc-300">{panel.summary}</p>
                   </div>
-                  <div className="space-y-1 text-[0.7rem] uppercase tracking-[0.4em] text-zinc-400">
+                  <div className="space-y-1 text-[0.7rem] uppercase tracking-[0.28em] text-zinc-400">
                     {panel.fields.map((field) => (
                       <p key={field}>{field}</p>
                     ))}
@@ -266,43 +266,43 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="events" className="space-y-6">
-            <div className="flex flex-col gap-2">
+          <section id="events" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
+            <div className="flex flex-col gap-1.5">
               <SectionHeader
                 eyebrow="Experiencias"
                 title="Eventos destacados en camino"
                 description="Tarjetas mock que muestran fecha, locación, lineups y rango de precios; así sabremos qué datos solicitar del backend."
                 meta={<StatusBadge label="Sprint 00005" tone="info" />}
               />
-              <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
+              <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
                 <span className="flex items-center gap-1 text-white">
                   <FiArrowUpRight className="text-xs" /> Insights en vivo
                 </span>
                 <span>Rolling release</span>
               </div>
             </div>
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-5 lg:grid-cols-3">
               {eventPreviews.map((event) => (
-                <Card key={event.title} className="space-y-4">
+                <Card key={event.title} className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">{event.subtitle}</p>
+                      <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{event.subtitle}</p>
                       <h3 className="text-2xl font-semibold text-white">{event.title}</h3>
                     </div>
                     <StatusBadge label={event.statusLabel} tone={event.statusTone} />
                   </div>
-                  <div className="space-y-1 text-sm text-zinc-300">
+                  <div className="space-y-1 text-sm text-zinc-300 leading-relaxed">
                     <p className="flex items-center gap-2">
                       <FiClock className="text-base" /> {event.dateLabel}
                     </p>
                     <p className="flex items-center gap-2">
                       <FiMapPin className="text-base" /> {event.location}
                     </p>
-                    <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">Price range</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Price range</p>
                     <p className="text-lg font-semibold text-white">{event.priceRange}</p>
                   </div>
-                  <div className="space-y-1 text-sm text-zinc-300">
-                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">Lineup</p>
+                  <div className="space-y-1 text-sm text-zinc-300 leading-relaxed">
+                    <p className="text-[0.65rem] uppercase tracking-[0.25em] text-zinc-400">Lineup</p>
                     <ul className="space-y-1">
                       {event.lineup.map((item) => (
                         <li key={item} className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
-                  <div className="flex flex-wrap gap-2 text-[0.6rem] uppercase tracking-[0.35em] text-zinc-400">
+                  <div className="flex flex-wrap gap-2 text-[0.6rem] uppercase tracking-[0.25em] text-zinc-400">
                     <span>{event.capacity}</span>
                     {event.tags.map((tag) => (
                       <span key={tag} className="rounded-full border border-white/10 px-3 py-1">
@@ -320,7 +320,7 @@ export default function Home() {
                       </span>
                     ))}
                   </div>
-                  <div className="space-y-1 rounded-2xl bg-white/5 p-3 text-[0.7rem] uppercase tracking-[0.35em] text-zinc-300">
+                  <div className="space-y-1 rounded-2xl bg-white/5 p-3 text-[0.7rem] uppercase tracking-[0.25em] text-zinc-300">
                     <p>Backend fields</p>
                     <div className="flex flex-wrap gap-2">
                       {event.backendFields.map((field) => (
@@ -335,20 +335,20 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="insights" className="space-y-6">
-            <div className="flex flex-col gap-2">
+          <section id="insights" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
+            <div className="flex flex-col gap-1.5">
               <SectionHeader
                 eyebrow="Inteligencia"
                 title="Operaciones, demanda y señales de invitados"
                 description="Sonidos de datos que llevan la experiencia de bootstrap a un espacio premium."
               />
-              <div className="grid gap-6 md:grid-cols-3">
+              <div className="grid gap-5 md:grid-cols-3">
                 {intelligenceStats.map((stat) => (
                   <StatCard key={stat.label} label={stat.label} value={stat.value} helper={stat.helper} tone="neutral" />
                 ))}
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               {intelligenceCards.map((card) => (
                 <Card key={card.title} variant="glass" className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -356,8 +356,8 @@ export default function Home() {
                     <FiBarChart2 className="text-lg text-zinc-300" />
                   </div>
                   <p className="text-sm text-zinc-300">{card.summary}</p>
-                  <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">{card.detail}</p>
-                  <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-300">
+                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{card.detail}</p>
+                  <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300">
                     {card.chips.map((chip) => (
                       <span key={chip} className="rounded-full border border-white/10 px-3 py-1">
                         {chip}
@@ -369,13 +369,13 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="backend" className="space-y-6">
+          <section id="backend" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
             <SectionHeader
               eyebrow="Backstage"
               title="Señales de datos que el backend debe entregar"
               description="Estos mocks dejan claro qué entidades y campos deberemos modelar cuando avancemos a auth y datos reales."
             />
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-3">
               {dataSignals.map((signal) => (
                 <Card key={signal.name} variant="glass" className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -383,7 +383,7 @@ export default function Home() {
                     <FiCompass className="text-sm text-zinc-400" />
                   </div>
                   <p className="text-sm text-zinc-300">{signal.description}</p>
-                  <p className="text-[0.6rem] uppercase tracking-[0.35em] text-zinc-500">Campos clave</p>
+                  <p className="text-[0.6rem] uppercase tracking-[0.28em] text-zinc-500">Campos clave</p>
                   <div className="flex flex-wrap gap-2 text-[0.65rem] text-zinc-200">
                     {signal.include.map((field) => (
                       <span key={field} className="rounded-full bg-white/5 px-3 py-1 text-[0.65rem]">
@@ -398,19 +398,19 @@ export default function Home() {
           </section>
         </main>
         <footer className="border-t border-white/10 bg-[#03050a]/70">
-          <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
+          <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-10 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">DCompass</p>
+              <p className="text-xs uppercase tracking-[0.32em] text-zinc-500">DCompass</p>
               <p className="text-lg font-semibold text-white">Clients Web</p>
             </div>
-            <div className="flex flex-wrap gap-4 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-400">
+            <div className="flex flex-wrap gap-2 md:gap-4 text-[0.65rem] uppercase tracking-[0.32em] text-zinc-400">
               {navLinks.map((link) => (
                 <a key={link.label} href={link.href} className="transition hover:text-white">
                   {link.label}
                 </a>
               ))}
             </div>
-            <p className="text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
+            <p className="text-[0.65rem] uppercase tracking-[0.32em] text-zinc-500">
               contact@dcompass.dev · Estatus premium
             </p>
           </div>
