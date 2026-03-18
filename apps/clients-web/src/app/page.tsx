@@ -8,7 +8,7 @@ import { FiArrowRight, FiArrowLeft, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, 
 
 const navLinks = [
   { label: "Inicio", href: "#hero-vnext" },
-  { label: "Eventos", href: "#featured-events" },
+  { label: "Eventos", href: "/events" },
   { label: "Beneficios", href: "#benefits" },
   { label: "Cómo funciona", href: "#how-it-works" }
 ];
@@ -245,13 +245,13 @@ export default function Page() {
                   Crear cuenta
                   <FiArrowRight className="text-sm" />
                 </Link>
-                <a
-                  href="#featured-events"
+                <Link
+                  href="/events"
                   className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
                 >
                   <FiPlay className="text-sm" />
                   Explorar eventos
-                </a>
+                </Link>
               </div>
 
               <div className="grid gap-4 pt-3 sm:grid-cols-3">
@@ -296,9 +296,9 @@ export default function Page() {
                   Planes que sí dan ganas de vivir.
                 </h2>
               </div>
-              <a href="#search-landing" className="text-sm font-medium tracking-[0.01em] transition hover:text-white" style={{ color: colors.accent }}>
+              <Link href="/events" className="text-sm font-medium tracking-[0.01em] transition hover:text-white" style={{ color: colors.accent }}>
                 Explorar más
-              </a>
+              </Link>
             </div>
 
             <div className="grid gap-5 lg:grid-cols-3">
@@ -412,12 +412,12 @@ export default function Page() {
                     Crear cuenta
                     <FiArrowRight className="text-sm" />
                   </Link>
-                  <a
-                    href="#featured-events"
+                  <Link
+                    href="/events"
                     className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
                   >
                     Explorar eventos
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -451,9 +451,9 @@ export default function Page() {
                 <div className="space-y-3">
                   <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Explora</p>
                   <div className="flex flex-col gap-2 text-sm text-zinc-400">
-                    <a href="#featured-events" className="transition hover:text-white">
+                    <Link href="/events" className="transition hover:text-white">
                       Eventos
-                    </a>
+                    </Link>
                     <a href="#benefits" className="transition hover:text-white">
                       Beneficios
                     </a>
@@ -469,12 +469,12 @@ export default function Page() {
                     <Link href="/signup" className="transition hover:text-white">
                       Crear cuenta
                     </Link>
-                    <a href="#featured-events" className="transition hover:text-white">
+                    <Link href="/events" className="transition hover:text-white">
                       Explorar eventos
-                    </a>
-                    <a href="#search-landing" className="transition hover:text-white">
+                    </Link>
+                    <Link href="/events" className="transition hover:text-white">
                       Buscar más
-                    </a>
+                    </Link>
                   </div>
                 </div>
 
