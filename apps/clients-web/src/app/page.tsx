@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import { FiArrowRight, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiX } from "react-icons/fi";
@@ -119,15 +120,22 @@ export default function Page() {
               ))}
             </nav>
 
-            <div className="ml-auto hidden items-center md:flex">
-              <a
-                href="#hero-vnext"
+            <div className="ml-auto hidden items-center gap-4 md:flex">
+              <Link
+                href="/login"
+                className="text-[0.88rem] font-semibold tracking-[0.01em] transition hover:text-white"
+                style={{ color: colors.accent }}
+              >
+                Acceso
+              </Link>
+              <Link
+                href="/register"
                 className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                 style={{ background: colors.accent }}
               >
                 Crear cuenta
                 <FiArrowRight className="text-sm" />
-              </a>
+              </Link>
             </div>
 
             <button
@@ -173,16 +181,24 @@ export default function Page() {
               ))}
             </nav>
 
-            <div className="border-t border-white/10 pt-6">
-              <a
-                href="#hero-vnext"
+            <div className="border-t border-white/10 pt-6 space-y-3">
+              <Link
+                href="/register"
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
                 style={{ color: colors.accent }}
               >
                 Crear cuenta
                 <FiArrowRight className="text-sm" />
-              </a>
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[0.88rem] font-semibold tracking-[0.01em] transition hover:text-white"
+                style={{ color: colors.accent }}
+              >
+                Acceso
+              </Link>
             </div>
           </aside>
         </div>
@@ -221,14 +237,21 @@ export default function Page() {
               </ul>
 
               <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href="#hero-vnext"
+                <Link
+                  href="/register"
                   className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                   style={{ background: colors.accent }}
                 >
                   Crear cuenta
                   <FiArrowRight className="text-sm" />
-                </a>
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] transition hover:border-white/30 hover:text-white"
+                  style={{ color: colors.accent }}
+                >
+                  Acceso
+                </Link>
                 <a
                   href="#featured-events"
                   className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
@@ -388,14 +411,21 @@ export default function Page() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <a
-                    href="#hero-vnext"
+                  <Link
+                    href="/register"
                     className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                     style={{ background: colors.accent }}
                   >
                     Crear cuenta
                     <FiArrowRight className="text-sm" />
-                  </a>
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] transition hover:border-white/30 hover:text-white"
+                    style={{ color: colors.accent }}
+                  >
+                    Acceso
+                  </Link>
                   <a
                     href="#featured-events"
                     className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
@@ -450,8 +480,11 @@ export default function Page() {
                 <div className="space-y-3">
                   <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Cuenta</p>
                   <div className="flex flex-col gap-2 text-sm text-zinc-400">
-                    <a href="#hero-vnext" className="transition hover:text-white">
+                    <a href="/register" className="transition hover:text-white">
                       Crear cuenta
+                    </a>
+                    <a href="/login" className="transition hover:text-white">
+                      Acceso
                     </a>
                     <a href="#featured-events" className="transition hover:text-white">
                       Explorar eventos
