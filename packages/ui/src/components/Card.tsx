@@ -1,13 +1,12 @@
 import type { HTMLAttributes } from "react";
 import clsx from "clsx";
-import { colors, radii, shadows, surfaces } from "../design/tokens";
+import { colors, radii, shadows, surfaces, spacing } from "../design/tokens";
 
 export type CardVariant = "panel" | "glass" | "accent";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   title?: string;
   variant?: CardVariant;
-  accent?: boolean;
 }
 
 const variantBackground = {
@@ -28,18 +27,26 @@ const variantShadow = {
   accent: shadows.glow
 };
 
-export function Card({ title, variant = "panel", accent, children, className, style, ...props }: CardProps) {
+const variantPadding: Record<CardVariant, string> = {
+  panel: spacing.lg,
+  glass: spacing.lg,
+  accent: spacing.md
+};
+
+export function Card({ title, variant = "panel", children, className, style, ...props }: CardProps) {
   const background = variantBackground[variant];
   const borderColor = variantBorder[variant];
   const boxShadow = variantShadow[variant];
+  const padding = variantPadding[variant];
 
   return (
     <article
       className={clsx(
-        "relative border p-6 shadow-2xl",
+        "relative border shadow-2xl",
         className
       )}
       style={{
+        padding,
         background,
         borderColor,
         borderRadius: radii.shell,
@@ -50,7 +57,10 @@ export function Card({ title, variant = "panel", accent, children, className, st
       {...props}
     >
       {title ? (
-        <header className="mb-4 text-xs font-semibold uppercase tracking-[0.4em]" style={{ color: colors.textSecondary }}>
+        <header
+          className="text-xs font-semibold uppercase tracking-[0.4em]"
+          style={{ color: colors.textSecondary, marginBottom: spacing.sm }}
+        >
           {title}
         </header>
       ) : null}

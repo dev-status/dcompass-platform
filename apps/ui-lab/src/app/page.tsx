@@ -158,6 +158,11 @@ export default function Page() {
           eyebrow="Componentes"
           title="Primitivas reutilizables"
           description="Buttons, inputs, cards y badges ensamblados con los tokens del sistema."
+          meta={
+            <p className="text-sm" style={{ color: colors.textTertiary, fontFamily: typography.fonts.body }}>
+              Ritmo micro basado en spacing tokens para que cada bloque textual respire.
+            </p>
+          }
         />
         <div className={styles.componentGrid}>
           <Card title="Buttons">

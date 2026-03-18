@@ -23,23 +23,26 @@ const toneColor: Record<StatTone, string> = {
 
 export function StatCard({ label, value, helper, delta, tone = "neutral", icon }: StatCardProps) {
   return (
-    <Card variant="glass" className="space-y-2">
-      <div className="flex items-center justify-between" style={{ color: colors.textSecondary }}>
-        <span className="text-[0.65rem] uppercase tracking-[0.4em]">{label}</span>
+    <Card variant="glass" className="space-y-4">
+      <div className="flex items-center justify-between gap-4" style={{ color: colors.textSecondary }}>
+        <span className="text-[0.7rem] uppercase tracking-[0.45em]">{label}</span>
         {delta ? (
-          <span className="text-[0.65rem] font-semibold" style={{ color: toneColor[tone] }}>
+          <span className="text-[0.75rem] font-semibold tracking-[0.3em]" style={{ color: toneColor[tone] }}>
             {delta}
           </span>
         ) : null}
       </div>
-      <div className="flex items-baseline gap-3">
-        {icon ? <div className="text-xl">{icon}</div> : null}
-        <strong className="text-2xl" style={{ color: colors.textPrimary, fontFamily: typography.fonts.heading }}>
+      <div className="flex items-baseline gap-4">
+        {icon ? <div className="text-[1.2rem]" style={{ color: colors.textSecondary }}>{icon}</div> : null}
+        <strong
+          className="text-2xl"
+          style={{ color: colors.textPrimary, fontFamily: typography.fonts.heading }}
+        >
           {value}
         </strong>
       </div>
       {helper ? (
-        <p className="text-xs" style={{ color: colors.textTertiary }}>
+        <p className="text-sm leading-relaxed tracking-[0.05em]" style={{ color: colors.textTertiary }}>
           {helper}
         </p>
       ) : null}
