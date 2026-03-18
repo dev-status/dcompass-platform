@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
+import { colors, radii, shadows, surfaces } from "../design/tokens";
 
 export type HeroAction = {
   label: string;
@@ -18,56 +19,72 @@ export interface HeroPanelProps {
   children?: ReactNode;
 }
 
-const actionTone = {
-  primary: "bg-primary text-white hover:bg-orange-500",
-  secondary: "border border-primary text-primary hover:bg-primary/10"
+const actionVariants = {
+  primary: {
+    background: colors.accent,
+    color: colors.textPrimary,
+    border: `1px solid ${colors.accent}`
+  },
+  secondary: {
+    background: "transparent",
+    color: colors.textSecondary,
+    border: `1px solid ${colors.border}`
+  }
 };
 
-export function HeroPanel({
-  title,
-  summary,
-  highlight,
-  accent,
-  actions = [],
-  children
-}: HeroPanelProps) {
+export function HeroPanel({ title, summary, highlight, accent, actions = [], children }: HeroPanelProps) {
   return (
     <section
-      className={twMerge(
-        "w-full max-w-5xl space-y-6 rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur",
-        "dark:border-white/10 dark:bg-black/60"
-      )}
+      className={twMerge("w-full max-w-5xl space-y-6 border p-8 shadow-2xl backdrop-blur", "dark:border-white/10")}
+      style={{
+        background: surfaces.panel,
+        borderColor: colors.border,
+        borderRadius: radii.shell,
+        boxShadow: shadows.card
+      }}
     >
       <div className="space-y-2">
         {highlight ? (
-          <p className={twMerge("text-sm font-semibold uppercase tracking-[0.3em]", accent ? "text-orange-500" : "text-primary")}>
+          <p
+            className="text-xs font-semibold uppercase tracking-[0.4em]"
+            style={{ color: accent ?? colors.accent }}
+          >
             {highlight}
           </p>
         ) : null}
         <h1
-          className="text-4xl font-semibold leading-tight text-zinc-900 dark:text-zinc-100"
-          style={accent ? { color: accent } : undefined}
+          className="text-4xl font-semibold leading-tight"
+          style={{ color: colors.textPrimary, fontFamily: "Space Grotesk, 'Geist', sans-serif" }}
         >
           {title}
         </h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-300">{summary}</p>
+        <p className="text-lg" style={{ color: colors.textSecondary }}>
+          {summary}
+        </p>
       </div>
       <div className="flex flex-wrap gap-4">
-        {actions.map((action) => (
-          <a
-            key={action.label}
-            href={action.href}
-            className={clsx(
-              "rounded-full px-5 py-3 text-sm font-semibold transition",
-              actionTone[action.accent ?? "primary"]
-            )}
-          >
-            {action.label}
-            {action.description ? (
-              <span className="block text-xs font-normal opacity-80">{action.description}</span>
-            ) : null}
-          </a>
-        ))}
+        {actions.map((action) => {
+          const tone = actionVariants[action.accent ?? "primary"];
+          return (
+            <a
+              key={action.label}
+              href={action.href}
+              className={clsx("rounded-full px-5 py-3 text-sm font-semibold uppercase tracking-[0.3em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2")}
+              style={{
+                background: tone.background,
+                color: tone.color,
+                border: tone.border
+              }}
+            >
+              {action.label}
+              {action.description ? (
+                <span className="block text-[0.65rem] font-normal tracking-[0.2em] uppercase" style={{ color: tone.color, opacity: 0.7 }}>
+                  {action.description}
+                </span>
+              ) : null}
+            </a>
+          );
+        })}
       </div>
       {children}
     </section>

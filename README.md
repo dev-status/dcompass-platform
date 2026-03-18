@@ -18,6 +18,16 @@ packages/
   └── validation     Zod schemata for ticket/reservation flows
 ```
 
+## UI Lab
+
+A new `apps/ui-lab` surface hosts the DCompass design system playground (tokens, assets, typography and primitives) before those rules are consumed by the real client/partner apps.
+
+Start it with:
+
+```bash
+pnpm --filter ui-lab dev
+```
+
 ## Getting started
 
 ```bash
