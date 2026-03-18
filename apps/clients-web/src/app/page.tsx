@@ -1,7 +1,7 @@
 import { Card, HeroPanel, SectionHeader, StatCard, StatusBadge } from "@dcompass/ui";
 import { FiArrowUpRight, FiBarChart2, FiClock, FiCompass, FiMapPin, FiUsers } from "react-icons/fi";
-import EventCard from "@/components/EventCard";
-import { eventShowcase } from "@/data/events";
+import EventCard from "../components/EventCard";
+import { eventShowcase } from "../data/events";
 
 const navLinks = [
   { label: "Discovery", href: "#explore" },

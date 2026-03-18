@@ -1,4 +1,4 @@
-import type { EventCardData } from "@/components/EventCard";
+import type { EventCardData } from "../components/EventCard";
 
 export const eventShowcase: EventCardData[] = [
   {

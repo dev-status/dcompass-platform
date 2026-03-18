@@ -1,7 +1,7 @@
 import { Card, StatusBadge } from "@dcompass/ui";
 import { FiClock, FiMapPin } from "react-icons/fi";
 
-export type EventStatusTone = "positive" | "warning" | "info" | "neutral";
+export type EventStatusTone = "positive" | "warning" | "info" | "danger";
 
 export type EventCardData = {
   id: string;
