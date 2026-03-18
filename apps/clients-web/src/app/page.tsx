@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import Link from "next/link";
-import { FiArrowRight, FiArrowLeft, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiX } from "react-icons/fi";
+import { FiArrowRight, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiX } from "react-icons/fi";
 
 const navLinks = [
   { label: "Inicio", href: "#hero-vnext" },
