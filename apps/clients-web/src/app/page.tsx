@@ -427,7 +427,7 @@ export default function Page() {
                   />
                 </div>
                 <p className="text-sm leading-relaxed text-zinc-400">
-                  Una forma más simple de descubrir eventos, encontrar tu siguiente plan y vivir mejores noches.
+                  Una forma más simple de descubrir eventos, encontrar tu siguiente plan y salir mejor.
                 </p>
               </div>
 
