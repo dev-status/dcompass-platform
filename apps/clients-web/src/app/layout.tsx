@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DCompass | Descubre tu siguiente plan",
   description:
-    "Clients Web es la primera superficie pública premium de DCompass para discovery, eventos y datos de clientes.",
+    "Descubre eventos, encuentra tu siguiente plan y vive una mejor experiencia desde el inicio.",
   openGraph: {
     title: "DCompass | Descubre tu siguiente plan",
-    description: "Una experiencia premium de discovery para partners y clientes.",
+    description: "Descubre eventos, encuentra tu siguiente plan y vive una mejor experiencia desde el inicio.",
     type: "website"
   }
 };
