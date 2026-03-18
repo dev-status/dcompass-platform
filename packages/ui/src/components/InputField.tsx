@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes } from "react";
 import clsx from "clsx";
-import { colors, radii, spacing, shadows } from "../design/tokens";
+import { colors, radii, shadows } from "../design/tokens";
 
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -9,15 +9,18 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export function InputField({ label, helperText, className, style, ...props }: InputFieldProps) {
   return (
-    <label className="inline-flex w-full flex-col gap-2 text-left">
+    <label className="inline-flex w-full flex-col gap-3 text-left">
       {label ? (
-        <span className="text-xs font-semibold uppercase tracking-[0.4em]" style={{ color: colors.textSecondary }}>
+        <span
+          className="text-[0.7rem] font-semibold uppercase tracking-[0.35em]"
+          style={{ color: colors.textSecondary }}
+        >
           {label}
         </span>
       ) : null}
       <input
         className={clsx(
-          "w-full rounded-[18px] border bg-transparent px-4 py-3 text-sm font-medium transition focus:outline-none focus-visible:outline focus-visible:outline-[3px]",
+          "w-full rounded-[18px] border bg-transparent px-5 py-4 text-base font-medium transition focus:outline-none focus-visible:outline focus-visible:outline-[3px]",
           className
         )}
         style={{
@@ -31,7 +34,10 @@ export function InputField({ label, helperText, className, style, ...props }: In
         {...props}
       />
       {helperText ? (
-        <span className="text-[0.65rem] uppercase tracking-[0.4em]" style={{ color: colors.textTertiary }}>
+        <span
+          className="text-[0.65rem] uppercase tracking-[0.3em]"
+          style={{ color: colors.textTertiary }}
+        >
           {helperText}
         </span>
       ) : null}
