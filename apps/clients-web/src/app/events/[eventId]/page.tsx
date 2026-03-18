@@ -1,210 +1,233 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Card, SectionHeader, StatusBadge } from "@dcompass/ui";
-import { FiArrowLeft, FiClock, FiCompass, FiMapPin } from "react-icons/fi";
-import { eventShowcase } from "../../../data/events";
+import { brandAssets, colors } from "@dcompass/ui";
+import { FiArrowLeft, FiArrowRight, FiCalendar, FiClock, FiMapPin, FiMenu, FiUsers, FiX } from "react-icons/fi";
+import { useState } from "react";
 
-const actionBase =
-  "inline-flex items-center justify-center rounded-full px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.3em] transition";
+const navLinks = [
+  { label: "Inicio", href: "#top" },
+  { label: "Boletos", href: "#tickets" },
+  { label: "Detalles", href: "#details" },
+  { label: "Venue", href: "#venue" }
+];
+
+const ticketTypes = [
+  {
+    name: "General",
+    description: "Acceso individual · entrada regular",
+    price: "$280 MXN",
+    availability: "Disponible"
+  },
+  {
+    name: "Early Access",
+    description: "Entrada prioritaria antes de las 10 PM",
+    price: "$420 MXN",
+    availability: "Pocos boletos"
+  },
+  {
+    name: "Mesa compartida",
+    description: "Espacio reservado para 4 personas",
+    price: "$1,200 MXN",
+    availability: "Disponible"
+  }
+];
+
+const infoPoints = [
+  { icon: FiCalendar, label: "Fecha", value: "Viernes 22 de marzo" },
+  { icon: FiClock, label: "Horario", value: "10:00 PM · 3:00 AM" },
+  { icon: FiMapPin, label: "Venue", value: "Supra Roma · CDMX" },
+  { icon: FiUsers, label: "Ambiente", value: "DJ set íntimo · aforo limitado" }
+];
 
 export default function EventDetailPage({ params }: { params: { eventId: string } }) {
-  const event = eventShowcase.find((item) => item.id === params.eventId);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const eventId = params?.eventId;
 
-  if (!event) {
+  if (!eventId) {
     notFound();
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#01030b] text-white">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.15),_transparent_40%)] blur-3xl" />
+    <main id="top" className="min-h-screen bg-[#020308] text-white">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_40%)] blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(130,89,208,0.22),_transparent_62%)]" />
       </div>
 
-      <section className="relative isolate overflow-hidden border-b border-white/10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(180deg, rgba(2,3,8,.1), rgba(2,3,8,.95)), url(${event?.cover})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-          }}
-        />
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 sm:py-12 lg:px-10 lg:py-16">
-          <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.35em] text-zinc-300">
-            <Link href="/" className="flex items-center gap-2 text-zinc-400 transition hover:text-white">
-              <FiArrowLeft className="text-base" />
-              Home premium
-            </Link>
-            <span className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.35em]">
-              <FiCompass className="text-sm" />
-              Catálogo · detalle público
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-200">
-              <StatusBadge label={event?.status.label ?? "Detalle"} tone={event?.status.tone ?? "info"} />
-              <span>{event?.category}</span>
-              {event?.availabilityDetail && <span className="text-white/70">{event.availabilityDetail}</span>}
-            </div>
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl">
-              {event?.title}
-            </h1>
-            <p className="text-sm uppercase tracking-[0.35em] text-zinc-400">{event?.subtitle}</p>
-            <p className="max-w-3xl text-sm text-zinc-100">{event?.heroStatement}</p>
-            <div className="flex flex-wrap items-center gap-5 text-[0.75rem] uppercase tracking-[0.28em] text-zinc-200">
-              <span className="flex items-center gap-2">
-                <FiClock className="text-base" />
-                {event?.dateLabel}
-              </span>
-              <span className="flex items-center gap-2">
-                <FiMapPin className="text-base" />
-                {event?.location}
-              </span>
-            </div>
-          </div>
-
-          <p className="max-w-4xl text-sm text-zinc-200">{event?.heroNarrative}</p>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={event?.ctaHref ?? "mailto:contact@dcompass.dev"}
-              className={`${actionBase} border border-white/30 bg-white/90 text-[#020308] shadow-[0_16px_30px_rgba(2,8,16,0.65)] hover:bg-white`}
-            >
-              {event?.ctaLabel ?? "Solicitar acceso"}
+      <div className="relative">
+        <header className="border-b border-white/10 bg-[#020308]/92 backdrop-blur-2xl">
+          <div className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 sm:px-6 lg:px-10">
+            <a href="#top" className="flex items-center gap-3 sm:gap-4">
+              <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={54} height={54} priority className="h-10 w-10 rounded-xl object-contain sm:h-11 sm:w-11" />
+              <Image src={brandAssets.lettersLogo} alt="DCOMPASS" width={190} height={40} priority className="h-5 w-auto sm:h-6" />
             </a>
-            <Link
-              href="/#events"
-              className={`${actionBase} border border-white/30 text-white/80 hover:text-white`}
-            >
-              Volver al calendario
-            </Link>
-            {event?.ctaSubLabel && <span className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300">{event.ctaSubLabel}</span>}
+
+            <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
+              {navLinks.map((link) => (
+                <a key={link.label} href={link.href} className="text-[0.92rem] font-medium tracking-[0.01em] text-zinc-400 transition hover:text-white">
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="ml-auto hidden items-center gap-4 md:flex">
+              <Link href="/events" className="text-sm font-medium tracking-[0.01em] text-zinc-300 transition hover:text-white">
+                Volver a eventos
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                style={{ background: colors.accent }}
+              >
+                Iniciar sesión
+                <FiArrowRight className="text-sm" />
+              </Link>
+            </div>
+
+            <button onClick={() => setMobileMenuOpen(true)} className="ml-auto inline-flex items-center justify-center text-white transition hover:text-zinc-300 lg:hidden" aria-label="Abrir navegación">
+              <FiMenu className="text-[1.35rem]" />
+            </button>
           </div>
+        </header>
+
+        <div className={`fixed inset-0 z-50 lg:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
+          <div onClick={() => setMobileMenuOpen(false)} className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"}`} aria-hidden="true" />
+          <aside className={`absolute right-0 top-0 flex h-full w-[82vw] max-w-[21rem] flex-col border-l border-white/10 bg-[#050711]/97 px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-5">
+              <div className="flex items-center gap-3">
+                <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={48} height={48} className="h-10 w-10 rounded-xl object-contain" />
+                <Image src={brandAssets.lettersLogo} alt="DCOMPASS" width={150} height={32} className="h-4 w-auto" />
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center text-white transition hover:text-zinc-300" aria-label="Cerrar navegación">
+                <FiX className="text-[1.4rem]" />
+              </button>
+            </div>
+
+            <nav className="flex flex-1 flex-col gap-6 py-8">
+              {navLinks.map((link) => (
+                <a key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)} className="text-[1.02rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:text-white">
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="border-t border-white/10 pt-6">
+              <Link href="/login" className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85" style={{ color: colors.accent }}>
+                Iniciar sesión
+                <FiArrowRight className="text-sm" />
+              </Link>
+            </div>
+          </aside>
         </div>
-      </section>
 
-      <main className="relative mx-auto max-w-6xl space-y-10 px-6 pb-16 pt-16 lg:px-10">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
-            <div className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-zinc-400">Narrativa</p>
-              <p className="text-lg leading-relaxed text-zinc-200">{event?.description}</p>
+        <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+            <div className="space-y-6">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070914] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+                <div className="relative aspect-[16/10] w-full">
+                  <Image src="/hero/hero-v2.png" alt="Noches en Supra Roma" fill priority className="object-cover" />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,3,8,0.06),rgba(2,3,8,0.58))]" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,89,208,0.24),transparent_42%)]" />
+                </div>
+              </div>
+
               <div className="space-y-3">
-                <p className="text-[0.65rem] uppercase tracking-[0.35em] text-zinc-400">Lineup destacado</p>
-                <ul className="space-y-2 text-sm text-zinc-100">
-                  {event?.lineup.map((entry) => (
-                    <li key={entry} className="flex items-center gap-3">
-                      <span className="h-2 w-2 rounded-full bg-white/70" />
-                      {entry}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="grid gap-3 md:grid-cols-3">
-                {event?.highlights?.map((highlight) => (
-                  <div key={highlight.title} className="rounded-2xl border border-white/10 bg-[#01030f]/70 p-3">
-                    <p className="text-[0.55rem] uppercase tracking-[0.35em] text-zinc-500">{highlight.title}</p>
-                    <p className="text-sm text-zinc-200">{highlight.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <SectionHeader
-                eyebrow="Propósito"
-                title="Experiencia completa"
-                description="El detail comunica hero, lineup, logística y datos clave para que el backend y el equipo comercial tengan claridad."
-              />
-              <p className="text-sm text-zinc-300">{event?.heroNarrative}</p>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <Card variant="glass" className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="space-y-2">
-                <p className="text-[0.65rem] uppercase tracking-[0.4em] text-zinc-400">Locación</p>
-                <p className="text-2xl font-semibold text-white">{event?.venueInfo?.name}</p>
-                <p className="text-sm text-zinc-300">
-                  {event?.venueInfo?.address} · {event?.venueInfo?.neighborhood}
+                <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">DJ Set · Roma Norte</p>
+                <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl xl:text-[3.7rem]">
+                  Noches en Supra Roma.
+                </h1>
+                <p className="max-w-2xl text-base leading-relaxed text-zinc-300 sm:text-lg">
+                  Una noche de house, luces bajas y un venue íntimo en Roma Norte para entrar con calma, quedarte por la música y salir con el plan bien vivido.
                 </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">{event?.venueInfo?.city}</p>
-                {event?.venueInfo?.note && <p className="text-sm text-zinc-300">{event.venueInfo.note}</p>}
               </div>
-              <div className="space-y-3">
-                {event?.logistics?.map((item) => (
-                  <div key={item.label} className="flex flex-col gap-1">
-                    <p className="text-[0.65rem] uppercase tracking-[0.35em] text-zinc-400">{item.label}</p>
-                    <p className="text-sm text-white">{item.detail}</p>
-                    {item.helper && <p className="text-xs text-zinc-400">{item.helper}</p>}
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <Card variant="glass" className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[0.65rem] uppercase tracking-[0.35em] text-zinc-400">Data contract</p>
-                  <p className="text-lg font-semibold text-white">Campos públicos</p>
-                </div>
-                <StatusBadge label="Sprint 00009" tone="info" />
-              </div>
-              <div className="space-y-3">
-                {event?.dataPoints?.map((point) => (
-                  <div key={point.label} className="rounded-2xl border border-white/10 bg-[#01030f]/80 p-3">
-                    <p className="text-[0.65rem] uppercase tracking-[0.35em] text-zinc-400">{point.label}</p>
-                    <p className="text-sm font-semibold text-white">{point.value}</p>
-                    {point.helper && <p className="text-xs text-zinc-400">{point.helper}</p>}
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        </div>
+            </div>
 
-        <section className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <SectionHeader
-              eyebrow="Tickets"
-              title="Tipos de acceso y precios"
-              description="Mockups para descubrir cómo el pricing y la disponibilidad se comunican desde el detalle."
-            />
-            <StatusBadge label="Mock pricing" tone="positive" />
-          </div>
-          <div className="grid gap-5 md:grid-cols-3">
-            {event?.ticketTiers?.map((ticket) => (
-              <div key={ticket.tier} className="space-y-2 rounded-2xl border border-white/10 bg-[#020308]/70 p-5">
-                <p className="text-[0.65rem] uppercase tracking-[0.35em] text-zinc-400">{ticket.tier}</p>
-                <p className="text-2xl font-semibold text-white">{ticket.price}</p>
-                <p className="text-sm text-zinc-300">{ticket.description}</p>
-                <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
-                  <span>{ticket.availability}</span>
-                  <span className="text-emerald-300">{ticket.status}</span>
+            <div className="grid gap-6">
+              <section id="tickets" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Boletos</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white">Elige cómo quieres entrar.</h2>
                 </div>
-              </div>
-            ))}
+
+                <div className="mt-6 grid gap-4">
+                  {ticketTypes.map((ticket) => (
+                    <article key={ticket.name} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-semibold text-white">{ticket.name}</h3>
+                            <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
+                              {ticket.availability}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm leading-relaxed text-zinc-300">{ticket.description}</p>
+                        </div>
+                        <p className="text-sm font-medium text-white">{ticket.price}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <Link
+                    href="/ticket-selection"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Comprar boletos
+                    <FiArrowRight className="text-sm" />
+                  </Link>
+                  <button className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white">
+                    Guardar evento
+                  </button>
+                </div>
+              </section>
+
+              <section id="details" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Detalles</p>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white">Lo que necesitas saber antes de llegar.</h2>
+                </div>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {infoPoints.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.label} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
+                        <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                          <Icon className="text-base" />
+                        </div>
+                        <p className="text-sm font-medium text-zinc-400">{item.label}</p>
+                        <p className="mt-2 text-base font-medium text-white">{item.value}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section id="venue" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Venue</p>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white">Supra Roma · Ciudad de México</h2>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    Un espacio íntimo en Roma Norte con aforo limitado, barra abierta desde temprano y una atmósfera pensada para entrar fácil y quedarte por la música.
+                  </p>
+                </div>
+              </section>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
-            <span className="font-semibold text-white">Disponibilidad real</span>
-            <span>{event?.availability}</span>
-            <span>{event?.priceLabel}</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={event?.ctaHref ?? "mailto:contact@dcompass.dev"}
-              className={`${actionBase} border border-white/30 bg-white/90 text-[#020308] hover:bg-white`}
-            >
-              {event?.ctaLabel ?? "Solicitar acceso"}
-            </a>
-            <Link
-              href="/#events"
-              className={`${actionBase} border border-white/30 text-white/80 hover:text-white`}
-            >
-              Ver otras experiencias
+
+          <div className="flex justify-start pt-2">
+            <Link href="/events" className="inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-white">
+              <FiArrowLeft className="text-sm" />
+              Volver a eventos
             </Link>
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
