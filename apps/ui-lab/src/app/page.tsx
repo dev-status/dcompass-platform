@@ -1,273 +1,205 @@
-"use client";
-
 import Image from "next/image";
-import Link from "next/link";
-import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCalendar, FiClock, FiFilter, FiMapPin, FiMenu, FiSearch, FiSliders, FiX } from "react-icons/fi";
-import { useState } from "react";
+import { Button, Card, ColorSwatch, EmptyState, HeroPanel, InputField, SectionHeader, StatCard, StatusBadge, brandAssets, colors, surfaces, surfaceTokens, typography } from "@dcompass/ui";
+import styles from "./page.module.css";
 
-const navLinks = [
-  { label: "Inicio", href: "#top" },
-  { label: "Eventos", href: "#results" },
-  { label: "Filtros", href: "#filters" },
-  { label: "Mapa", href: "#map-preview" }
+const palette = [
+  { label: "Canvas", value: colors.background, description: "Fondo gráfico principal" },
+  { label: "Panel", value: colors.surface, description: "Superficie de contenidos" },
+  { label: "Accent", value: colors.accent, description: "Llamadas a la acción" },
+  { label: "Glow", value: colors.accentBlend, description: "Overlays y opacidades" },
+  { label: "Partners", value: surfaces.partners, description: "Modo partners" },
+  { label: "Success", value: colors.success, description: "Confirmaciones" },
+  { label: "Warning", value: colors.warning, description: "Alertas suaves" },
+  { label: "Danger", value: colors.danger, description: "Urgencias" }
 ];
 
-const quickFilters = ["Hoy", "Esta semana", "CDMX", "DJ Sets", "Bar", "Live"];
-
-const events = [
+const typographyScale = [
   {
-    title: "Noches en Supra Roma",
-    category: "DJ Set · Roma Norte",
-    date: "Vie 22 Mar · 10:00 PM",
-    location: "CDMX",
-    price: "Desde $280 MXN",
-    status: "Entradas disponibles",
-    image: "/hero/hero-v2.png"
+    label: "Display / H1",
+    size: typography.scale.display,
+    weight: typography.weights.bold,
+    sample: "DCompass",
+    note: "Headline hero"
   },
   {
-    title: "Casa Aurora Sessions",
-    category: "Live Set · Condesa",
-    date: "Sáb 23 Mar · 9:30 PM",
-    location: "CDMX",
-    price: "Desde $350 MXN",
-    status: "Últimos accesos",
-    image: "/hero/hero-v2.png"
+    label: "Hero / H2",
+    size: typography.scale.hero,
+    weight: typography.weights.semibold,
+    sample: "Nightlife intelligence",
+    note: "Section title"
   },
   {
-    title: "Session 03 Juárez",
-    category: "Bar Session · Juárez",
-    date: "Jue 28 Mar · 8:30 PM",
-    location: "CDMX",
-    price: "Desde $240 MXN",
-    status: "Preventa activa",
-    image: "/hero/hero-v2.png"
+    label: "Headline",
+    size: typography.scale.headline,
+    weight: typography.weights.medium,
+    sample: "Premium ticketing",
+    note: "Sub headers"
   },
   {
-    title: "Late Room Coyoacán",
-    category: "Selector Night · Coyoacán",
-    date: "Vie 29 Mar · 9:00 PM",
-    location: "CDMX",
-    price: "Desde $300 MXN",
-    status: "Entradas disponibles",
-    image: "/hero/hero-v2.png"
+    label: "Body",
+    size: typography.scale.body,
+    weight: typography.weights.regular,
+    sample: "Comprar, transferir y vivir el evento con calma.",
+    note: "Informational copy"
   },
   {
-    title: "Azotea 9",
-    category: "Rooftop Session · Juárez",
-    date: "Sáb 30 Mar · 6:00 PM",
-    location: "CDMX",
-    price: "Desde $420 MXN",
-    status: "Últimos accesos",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Room 12 After Hours",
-    category: "Afterhours · Roma",
-    date: "Dom 31 Mar · 1:00 AM",
-    location: "CDMX",
-    price: "Desde $260 MXN",
-    status: "Preventa activa",
-    image: "/hero/hero-v2.png"
+    label: "Label",
+    size: typography.scale.label,
+    weight: typography.weights.medium,
+    sample: "Partners",
+    note: "Caps + micro copy"
   }
 ];
 
 export default function Page() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
-    <main id="top" className="min-h-screen bg-[#020308] text-white">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_40%)] blur-3xl" />
-        <div className="absolute left-1/2 top-0 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(130,89,208,0.22),_transparent_62%)]" />
+    <main className={styles.page}>
+      <div className={styles.heroSection}>
+        <HeroPanel
+          highlight="Sistema visual"
+          title="Base de diseño DCompass"
+          summary="Tokens, recursos y primitives premium para diseñar la experiencia antes de implementar los flujos de producto."
+          accent={colors.accent}
+          actions={[
+            { label: "Ver paleta", href: "#paleta", description: "Colors & surfaces", accent: "secondary" },
+            { label: "Explorar componentes", href: "#componentes", description: "Buttons, cards, inputs" }
+          ]}
+        >
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <StatusBadge label="Premium" tone="positive" />
+            <StatusBadge label="Dark luxury" tone="info" />
+            <StatusBadge label="Partners" tone="warning" />
+          </div>
+        </HeroPanel>
       </div>
 
-      <div className="relative">
-        <header className="border-b border-white/10 bg-[#020308]/92 backdrop-blur-2xl">
-          <div className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 sm:px-6 lg:px-10">
-            <a href="#top" className="flex items-center gap-3 sm:gap-4">
-              <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={54} height={54} priority className="h-10 w-10 rounded-xl object-contain sm:h-11 sm:w-11" />
-              <Image src={brandAssets.lettersLogo} alt="DCOMPASS" width={190} height={40} priority className="h-5 w-auto sm:h-6" />
-            </a>
-
-            <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
-              {navLinks.map((link) => (
-                <a key={link.label} href={link.href} className="text-[0.92rem] font-medium tracking-[0.01em] text-zinc-400 transition hover:text-white">
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-
-            <div className="ml-auto hidden items-center gap-4 md:flex">
-              <Link href="/" className="text-sm font-medium tracking-[0.01em] text-zinc-300 transition hover:text-white">
-                Volver al home
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                style={{ background: colors.accent }}
-              >
-                Iniciar sesión
-                <FiArrowRight className="text-sm" />
-              </Link>
-            </div>
-
-            <button onClick={() => setMobileMenuOpen(true)} className="ml-auto inline-flex items-center justify-center text-white transition hover:text-zinc-300 lg:hidden" aria-label="Abrir navegación">
-              <FiMenu className="text-[1.35rem]" />
-            </button>
+      <section className={`${styles.section} ${styles.split}`} id="paleta">
+        <div>
+          <SectionHeader
+            eyebrow="Paleta"
+            title="Colores base y acentos"
+            description="La paleta premium se despliega en tonos de fondo profundo, morado brillante y variantes para comunicar estados y contextos."
+          />
+          <div className={styles.paletteGrid}>
+            {palette.map((color) => (
+              <ColorSwatch key={color.label} label={color.label} value={color.value} description={color.description} />
+            ))}
           </div>
-        </header>
-
-        <div className={`fixed inset-0 z-50 lg:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
-          <div onClick={() => setMobileMenuOpen(false)} className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"}`} aria-hidden="true" />
-          <aside className={`absolute right-0 top-0 flex h-full w-[88vw] max-w-sm flex-col border-l border-white/10 bg-[#050711]/97 px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
-            <div className="flex items-center justify-between border-b border-white/10 pb-5">
-              <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={48} height={48} className="h-10 w-10 rounded-xl object-contain" />
-              <button onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center text-white transition hover:text-zinc-300" aria-label="Cerrar navegación">
-                <FiX className="text-[1.4rem]" />
-              </button>
-            </div>
-
-            <nav className="flex flex-1 flex-col gap-6 py-8">
-              {navLinks.map((link) => (
-                <a key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)} className="text-[1.02rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:text-white">
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-
-            <div className="border-t border-white/10 pt-6">
-              <Link href="/login" className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85" style={{ color: colors.accent }}>
-                Iniciar sesión
-                <FiArrowRight className="text-sm" />
-              </Link>
-            </div>
-          </aside>
         </div>
+        <div className={styles.logoStack}>
+          <Card title="Marca central">
+            <Image src={brandAssets.mainLogo} alt="DCompass logo" width={340} height={140} />
+          </Card>
+          <Card title="Lettermarks">
+            <Image src={brandAssets.lettersLogo} alt="DCompass letters" width={260} height={120} />
+            <div className="mt-3">
+              <Image src={brandAssets.partnersLettersLogo} alt="Partners letters" width={260} height={120} />
+            </div>
+          </Card>
+        </div>
+      </section>
 
-        <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
-          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-end">
-            <div className="space-y-5">
-              <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Explorar eventos</p>
-              <h1 className="max-w-xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl xl:text-[3.7rem]">
-                Encuentra tu siguiente plan sin perder tiempo.
-              </h1>
-              <p className="max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-                Busca por zona, fecha o tipo de evento y encuentra opciones que sí dan ganas de vivir.
+      <section className={styles.section}>
+        <SectionHeader
+          eyebrow="Tipografía"
+          title="Escalas y reglas"
+          description="Space Grotesk + Inter mantienen la jerarquía. Los tamaños grandes usan Tracking neutral, los textos secundarios se apoyan en body legible."
+        />
+        <div className={styles.componentGrid}>
+          {typographyScale.map((token) => (
+            <Card key={token.label} title={token.label}>
+              <p
+                style={{
+                  fontSize: token.size,
+                  fontFamily: typography.fonts.heading,
+                  color: colors.textPrimary,
+                  fontWeight: token.weight
+                }}
+              >
+                {token.sample}
               </p>
+              <p className="mt-2 text-xs uppercase tracking-[0.3em]" style={{ color: colors.textSecondary }}>
+                {token.note} · {token.size}
+              </p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SectionHeader
+          eyebrow="Superficies"
+          title="Contextos visuales"
+          description="Mostrar variantes core y partners ya desde la base ayuda a validar contraste y jerarquía antes de construir product screens."
+        />
+        <div className={styles.surfaceGrid}>
+          {surfaceTokens.map((surface) => (
+            <Card
+              key={surface.name}
+              title={surface.name}
+              style={{
+                background: surface.color,
+                borderColor: surface.accent,
+                borderWidth: 1,
+                boxShadow: "0 20px 40px rgba(0,0,0,0.55)"
+              }}
+            >
+              <p className="text-sm" style={{ color: colors.textSecondary }}>
+                {surface.description}
+              </p>
+              <StatusBadge label="Surface" tone="info" />
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section} id="componentes">
+        <SectionHeader
+          eyebrow="Componentes"
+          title="Primitivas reutilizables"
+          description="Buttons, inputs, cards y badges ensamblados con los tokens del sistema."
+          meta={
+            <p className="text-sm" style={{ color: colors.textTertiary, fontFamily: typography.fonts.body }}>
+              Ritmo micro basado en spacing tokens para que cada bloque textual respire.
+            </p>
+          }
+        />
+        <div className={styles.componentGrid}>
+          <Card title="Buttons">
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary">Comprar ahora</Button>
+              <Button variant="secondary">Explorar eventos</Button>
+              <Button variant="ghost">Partners</Button>
             </div>
+          </Card>
 
-            <div id="filters" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
-              <div className="grid gap-4 lg:grid-cols-[1.3fr_0.8fr_0.8fr_auto]">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-200">Buscar evento</label>
-                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-400">
-                    <FiSearch className="text-base" />
-                    <span className="text-sm">DJ set, bar, venue o colonia</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-200">Fecha</label>
-                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-400">
-                    <FiCalendar className="text-base" />
-                    <span className="text-sm">Esta semana</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-200">Ciudad</label>
-                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-400">
-                    <FiMapPin className="text-base" />
-                    <span className="text-sm">Ciudad de México</span>
-                  </div>
-                </div>
-                <div className="flex items-end">
-                  <button className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110" style={{ background: colors.accent }}>
-                    Buscar
-                    <FiArrowRight className="text-sm" />
-                  </button>
-                </div>
-              </div>
+          <Card title="Inputs">
+            <InputField label="Código de acceso" placeholder="DCP-XXXX" helperText="Mayúsculas, no se aceptan espacios" />
+          </Card>
 
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-zinc-300">
-                  <FiSliders className="text-sm" />
-                  Filtros rápidos
-                </div>
-                {quickFilters.map((filter) => (
-                  <button key={filter} className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-300 transition hover:border-white/20 hover:text-white">
-                    {filter}
-                  </button>
-                ))}
-              </div>
+          <Card title="Badges">
+            <div className={styles.badgeRow}>
+              <StatusBadge label="Activo" tone="positive" />
+              <StatusBadge label="Información" tone="info" />
+              <StatusBadge label="Advertencia" tone="warning" />
+              <StatusBadge label="Crítico" tone="danger" />
             </div>
-          </div>
+          </Card>
 
-          <section id="results" className="grid gap-6 scroll-mt-24">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex flex-col gap-3 sm:max-w-2xl">
-                <p className="text-[0.98rem] font-medium tracking-[0.01em] text-zinc-400">Resultados</p>
-                <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Eventos para esta semana.
-                </h2>
-              </div>
-              <div id="map-preview" className="inline-flex items-center gap-2 text-sm font-medium tracking-[0.01em] text-zinc-300">
-                <FiFilter className="text-sm" />
-                24 resultados disponibles
-              </div>
-            </div>
+          <Card title="Stats">
+            <StatCard label="Tickets Premium" value="1,245" helper="Ventas semanales" delta="+4.3%" tone="positive" />
+          </Card>
 
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {events.map((event) => (
-                <article key={event.title} className="overflow-hidden rounded-[1.7rem] border border-white/10 bg-white/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
-                  <div className="relative aspect-[16/10] w-full">
-                    <Image src={event.image} alt={event.title} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,3,8,0.04),rgba(2,3,8,0.5))]" />
-                  </div>
-
-                  <div className="space-y-5 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-[0.72rem] tracking-[0.01em] text-zinc-500">{event.category}</p>
-                        <h3 className="mt-2 text-xl font-semibold text-white">{event.title}</h3>
-                      </div>
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
-                        {event.status}
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 text-sm text-zinc-300">
-                      <p className="flex items-center gap-2"><FiClock className="text-sm" />{event.date}</p>
-                      <p className="flex items-center gap-2"><FiMapPin className="text-sm" />{event.location}</p>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                      <p className="text-sm font-medium text-white">{event.price}</p>
-                      <Link href="/events/demo" className="text-sm font-medium transition hover:text-white" style={{ color: colors.accent }}>
-                        Ver evento
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <div className="flex items-center justify-between rounded-[1.7rem] border border-white/10 bg-white/[0.035] px-5 py-4 text-sm text-zinc-300">
-            <span>Mostrando 6 de 24 eventos</span>
-            <button className="inline-flex items-center gap-2 font-medium transition hover:text-white" style={{ color: colors.accent }}>
-              Ver más resultados
-              <FiArrowRight className="text-sm" />
-            </button>
-          </div>
-
-          <div className="flex justify-start pt-2">
-            <Link href="/" className="inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-white">
-              <FiArrowLeft className="text-sm" />
-              Volver al inicio
-            </Link>
-          </div>
-        </section>
-      </div>
+          <Card title="Empty states">
+            <EmptyState
+              title="Sin vistas todavía"
+              description="Agrega tareas del roadmap para que los partners puedan crear experiencias inolvidables."
+              icon={<span className="text-2xl">✨</span>}
+              action={<Button variant="secondary">Documentar sistema</Button>}
+            />
+          </Card>
+        </div>
+      </section>
     </main>
   );
 }
