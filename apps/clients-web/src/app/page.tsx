@@ -154,10 +154,13 @@ export default function Page() {
             aria-hidden="true"
           />
           <aside
-            className={`absolute right-0 top-0 flex h-full w-[88vw] max-w-sm flex-col border-l border-white/10 bg-[#050711]/97 px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+            className={`absolute right-0 top-0 flex h-full w-[82vw] max-w-[21rem] flex-col border-l border-white/10 bg-[#050711]/97 px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
           >
             <div className="flex items-center justify-between border-b border-white/10 pb-5">
-              <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={48} height={48} className="h-10 w-10 rounded-xl object-contain" />
+              <div className="flex items-center gap-3">
+                <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={48} height={48} className="h-10 w-10 rounded-xl object-contain" />
+                <Image src={brandAssets.lettersLogo} alt="DCOMPASS" width={150} height={32} className="h-4 w-auto" />
+              </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-flex items-center justify-center text-white transition hover:text-zinc-300"
@@ -182,22 +185,13 @@ export default function Page() {
 
             <div className="border-t border-white/10 pt-6">
               <Link
-                href="/signup"
+                href="/login"
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
                 style={{ color: colors.accent }}
               >
-                Crear cuenta
-                <FiArrowRight className="text-sm" />
-              </Link>
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-4 inline-flex items-center gap-2 text-[0.82rem] font-medium tracking-[0.01em] transition hover:text-white/85"
-                style={{ color: colors.accent }}
-              >
                 Iniciar sesión
-                <FiArrowLeft className="text-sm" />
+                <FiArrowRight className="text-sm" />
               </Link>
             </div>
           </aside>
@@ -296,8 +290,9 @@ export default function Page() {
                   Planes que sí dan ganas de vivir.
                 </h2>
               </div>
-              <Link href="/events" className="text-sm font-medium tracking-[0.01em] transition hover:text-white" style={{ color: colors.accent }}>
+              <Link href="/events" className="inline-flex items-center gap-2 text-sm font-medium tracking-[0.01em] transition hover:text-white" style={{ color: colors.accent }}>
                 Explorar más
+                <FiArrowRight className="text-sm" />
               </Link>
             </div>
 
