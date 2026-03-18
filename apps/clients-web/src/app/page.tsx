@@ -1,472 +1,494 @@
-import { Card, HeroPanel, SectionHeader, StatCard, StatusBadge } from "@dcompass/ui";
-import { FiArrowUpRight, FiBarChart2, FiClock, FiCompass, FiMapPin, FiUsers } from "react-icons/fi";
-import EventCard from "../components/EventCard";
-import { eventShowcase } from "../data/events";
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import { brandAssets, colors } from "@dcompass/ui";
+import { FiArrowRight, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiX } from "react-icons/fi";
 
 const navLinks = [
-  { label: "Explorar", href: "#explore" },
-  { label: "Eventos", href: "#events" },
-  { label: "Inteligencia", href: "#insights" },
-  { label: "Tras bambalinas", href: "#backend" }
+  { label: "Inicio", href: "#hero-vnext" },
+  { label: "Eventos", href: "#featured-events" },
+  { label: "Beneficios", href: "#benefits" },
+  { label: "Cómo funciona", href: "#how-it-works" }
 ];
 
-const heroStats = [
+const featuredEvents = [
   {
-    label: "Partners activos",
-    value: "28",
-    helper: "Salones, sellos y clubes",
-    delta: "+12% mensual",
-    tone: "positive" as const,
-    icon: <FiUsers />
+    title: "Noches en Supra Roma",
+    category: "DJ Set · Roma Norte",
+    date: "Vie 22 Mar · 10:00 PM",
+    location: "CDMX",
+    price: "Desde $280 MXN",
+    status: "Entradas disponibles"
   },
   {
-    label: "Eventos en preparación",
-    value: "16",
-    helper: "Calendario del segundo trimestre",
-    delta: "+6 reservas",
-    tone: "info" as const,
-    icon: <FiClock />
+    title: "Sábado en Casa Aurora",
+    category: "Live Set · Condesa",
+    date: "Sáb 23 Mar · 9:30 PM",
+    location: "CDMX",
+    price: "Desde $350 MXN",
+    status: "Últimos accesos"
   },
   {
-    label: "Capacidad verificada",
-    value: "4.2K",
-    helper: "asientos premium",
-    delta: "+18% contra dic",
-    tone: "positive" as const,
-    icon: <FiMapPin />
+    title: "Session 03 · Juárez",
+    category: "Bar Session · Juárez",
+    date: "Jue 28 Mar · 8:30 PM",
+    location: "CDMX",
+    price: "Desde $240 MXN",
+    status: "Preventa activa"
   }
 ];
 
-const valuePillars = [
+const trustBenefits = [
   {
-    title: "Descubrimiento operativo",
-    summary: "El home expone qué experiencias están listas y por qué importan.",
-    detail: "Cada historia comparte qué datos, socios y estados respaldan la promesa premium.",
-    icon: <FiCompass className="text-xl text-white" />
+    title: "Pagas lo que ves",
+    description: "Sin comisiones sorpresa al final del proceso.",
+    icon: FiStar
   },
   {
-    title: "Experiencias premium",
-    summary: "Los eventos se muestran como momentos curados, no como banners genéricos.",
-    detail: "Curadurías, sedes y ritmos se combinan para reflejar la pulcritud DCompass.",
-    icon: <FiUsers className="text-xl text-white" />
+    title: "Tu acceso está protegido",
+    description: "Seguridad primero para entrar con más confianza.",
+    icon: FiShield
   },
   {
-    title: "Conversión guiada",
-    summary: "Los CTAs acompañan la narrativa e invitan a la siguiente acción concreta.",
-    detail: "Solicitar acceso, revisar el calendario o consultar inteligencia desde el primer scroll.",
-    icon: <FiBarChart2 className="text-xl text-white" />
+    title: "Pasa tus boletos fácil",
+    description: "Transfiérelos sin complicarte cuando cambien los planes.",
+    icon: FiRepeat
   }
 ];
 
-const discoveryHighlights = [
+const howItWorks = [
   {
-    label: "Status operativo",
-    description: "Fechas, puertas y avances de ticketing listos para compartir con el equipo."
+    step: "1",
+    title: "Explora",
+    description: "Encuentra eventos que sí te laten, con información clara desde el inicio."
   },
   {
-    label: "Lineups narrativos",
-    description: "Artistas y momentos agrupados en frases que transmiten una experiencia real."
+    step: "2",
+    title: "Accede",
+    description: "Compra o aparta sin vueltas, con precios claros y menos fricción."
   },
   {
-    label: "Acciones claras",
-    description: "Botones y textos que guían a explorar el calendario o agendar un demo."
+    step: "3",
+    title: "Disfruta",
+    description: "Llega con todo listo y vive la experiencia sin complicarte de más."
   }
 ];
 
-const eventSignals = [
-  {
-    label: "Disponibilidad",
-    description: "Estados visibles desde el home: disponible, últimos boletos, agotado."
-  },
-  {
-    label: "Narrativa",
-    description: "Lineup, locación y precio se combinan para hablarle al cliente premium."
-  },
-  {
-    label: "Backend listo",
-    description: "Campos mínimos que el catálogo futuro deberá entregar sin sorpresas."
-  }
-];
+export default function Page() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-const discoveryPanels = [
-  {
-    title: "Recorridos curados",
-    summary: "Rutas que combinan gastronomía, arte y noches extendidas para invitados premium.",
-    tag: "Experiencias",
-    fields: ["categoría", "slug", "curador", "duración", "disponibilidad"]
-  },
-  {
-    title: "Intención del cliente",
-    summary: "Seguimos señales para saber cuándo desbloquear invitaciones o mejorar accesos.",
-    tag: "Inteligencia",
-    fields: ["id de cliente", "segmentos", "score de intención", "último contacto", "notificaciones"]
-  },
-  {
-    title: "Zonas del partner",
-    summary: "Mostramos campus, activos y rituales exclusivos definidos por cada socio.",
-    tag: "Tras bambalinas",
-    fields: ["id del partner", "sedes asignadas", "historia", "estado", "imágenes"]
-  }
-];
-
-const intelligenceCards = [
-  {
-    title: "Mapas de calor de audiencia",
-    summary: "Segmentación viva por geografía, gustos y gasto para emparejar invitaciones.",
-    detail: "Las señales se actualizan cada 4 horas durante las ventanas de preparación.",
-    chips: ["cobertura geo", "puntaje de intención", "demanda recurrente"]
-  },
-  {
-    title: "Preparación operativa",
-    summary: "Inventario, dotación y flujos de cobranza visibles antes de la liberación pública.",
-    detail: "Checks automáticos rastrean aforo, hospitalidad VIP y aprobaciones de seguridad.",
-    chips: ["códigos de retención", "planos del lugar", "sincronía de capacidad"]
-  }
-];
-
-const intelligenceStats = [
-  { label: "Latencia de decisión", value: "11 días", helper: "Media desde invitación" },
-  { label: "Clientes de alta intención", value: "420", helper: "Alertas premium" },
-  { label: "Gasto promedio", value: "$612", helper: "Venta directa" }
-];
-
-const dataSignals = [
-  {
-    name: "Eventos",
-    description: "Base para hero, preview y compact cards.",
-    include: [
-      "id",
-      "slug",
-      "title",
-      "description",
-      "startTime",
-      "endTime",
-      "lineup",
-      "priceRange",
-      "status",
-      "venue",
-      "capacity"
-    ],
-    touchpoints: "hero y eventos"
-  },
-  {
-    name: "Clientes",
-    description: "Permite personalizar invitaciones y estados.",
-    include: [
-      "clientId",
-      "tier",
-      "preferences",
-      "intentScore",
-      "lastInteraction",
-      "invites"
-    ],
-    touchpoints: "descubrimiento"
-  },
-  {
-    name: "Partners",
-    description: "Define zonas de experiencia y activos compartidos.",
-    include: ["partnerId", "venueIds", "assets", "status", "story", "contacts"],
-    touchpoints: "tras bambalinas"
-  }
-];
-
-export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#020308] text-white">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.15),_transparent_45%)] blur-3xl" />
-        <div className="absolute top-16 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(130,89,208,0.35),_transparent_60%)]" />
-        <div className="absolute bottom-0 right-0 h-60 w-60 translate-x-1/3 translate-y-1/3 rounded-full bg-[radial-gradient(circle,_rgba(45,214,168,0.2),_transparent_70%)]" />
+    <main className="min-h-screen bg-[#020308] text-white">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.1),_transparent_42%)] blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(130,89,208,0.28),_transparent_62%)]" />
       </div>
+
       <div className="relative">
-        <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#020308]/90 shadow-[0_20px_45px_rgba(0,0,0,0.65)] backdrop-blur-xl">
-          <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-4 md:px-6">
-            <div className="space-y-1">
-              <p className="text-[0.65rem] uppercase tracking-[0.6em] text-zinc-500">DCompass</p>
-              <p className="text-2xl font-semibold uppercase tracking-tight text-white">Clientes Web</p>
-            </div>
-            <nav className="hidden flex-1 items-center justify-center gap-6 text-[0.65rem] uppercase tracking-[0.28em] text-zinc-400 md:flex">
+        <header className="border-b border-white/10 bg-[#020308]/92 backdrop-blur-2xl">
+          <div className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 sm:px-6 lg:px-10">
+            <a href="#hero-vnext" className="flex items-center gap-3 sm:gap-4">
+              <Image
+                src={brandAssets.mainLogo}
+                alt="DCompass símbolo principal"
+                width={54}
+                height={54}
+                priority
+                className="h-10 w-10 rounded-xl object-contain sm:h-11 sm:w-11"
+              />
+              <Image
+                src={brandAssets.lettersLogo}
+                alt="DCOMPASS"
+                width={190}
+                height={40}
+                priority
+                className="h-5 w-auto sm:h-6"
+              />
+            </a>
+
+            <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
               {navLinks.map((link) => (
-                <a key={link.label} href={link.href} className="transition hover:text-white">
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-[0.92rem] font-medium tracking-[0.01em] text-zinc-400 transition hover:text-white"
+                >
                   {link.label}
                 </a>
               ))}
             </nav>
-            <div className="flex items-center gap-2 md:gap-3">
+
+            <div className="ml-auto hidden items-center md:flex">
               <a
-                href="#explore"
-                className="hidden rounded-full border border-white/30 px-3 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-white transition hover:border-white/70 md:inline-flex"
+                href="#hero-vnext"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                style={{ background: colors.accent }}
               >
-                Explorar experiencias
-              </a>
-              <a
-                href="mailto:contact@dcompass.dev"
-                className="rounded-full bg-[#8259d0] px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.65)] transition duration-200 hover:bg-[#9d7ee4]"
-              >
-                Solicitar acceso
+                Crear cuenta
+                <FiArrowRight className="text-sm" />
               </a>
             </div>
+
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="ml-auto inline-flex items-center justify-center text-white transition hover:text-zinc-300 lg:hidden"
+              aria-label="Abrir navegación"
+            >
+              <FiMenu className="text-[1.35rem]" />
+            </button>
           </div>
         </header>
-        <main className="mx-auto max-w-6xl space-y-12 px-6 pb-16 pt-6 md:space-y-14">
-          <HeroPanel
-            highlight="Centro de clientes"
-            title="Un centro premium para descubrir, invitar y vivir DCompass"
-            summary="Esta primera pantalla conecta descubrimiento, inteligencia y operación para que DCompass se perciba como una experiencia premium, clara y dirigida a convertir."
-            actions={[
-              { label: "Explorar experiencias", description: "Calendario privado y descubrimiento guiado", href: "#events", accent: "primary" },
-              { label: "Solicitar acceso", description: "Agendar una llamada con el equipo", href: "mailto:contact@dcompass.dev", accent: "secondary" }
-            ]}
+
+        <div className={`fixed inset-0 z-50 lg:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
+          <div
+            onClick={() => setMobileMenuOpen(false)}
+            className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"}`}
+            aria-hidden="true"
+          />
+          <aside
+            className={`absolute right-0 top-0 flex h-full w-[88vw] max-w-sm flex-col border-l border-white/10 bg-[#050711]/97 px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
           >
-            <div className="grid gap-4 md:grid-cols-3">
-              {heroStats.map((stat) => (
-                <StatCard
-                  key={stat.label}
-                  label={stat.label}
-                  value={stat.value}
-                  helper={stat.helper}
-                  delta={stat.delta}
-                  tone={stat.tone}
-                  icon={stat.icon}
-                />
-              ))}
-            </div>
-          </HeroPanel>
-
-          <section className="space-y-6">
-            <div className="flex flex-col gap-1.5">
-              <SectionHeader
-                eyebrow="Propuesta"
-                title="Un home que ya parece un producto real"
-                description="El primer scroll funciona como un discurso claro: descubrimiento, eventos, confianza y acciones en un solo flujo."
-              />
-              <p className="max-w-3xl text-sm text-zinc-300">
-                Aquí no se vende humo. Cada bloque comparte qué datos necesita el backend, qué activos deben mantenerse frescos y por qué el usuario debe avanzar. Es un home con ritmo, pero con intención.
-              </p>
-            </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {valuePillars.map((pillar) => (
-                <Card key={pillar.title} variant="glass" className="space-y-4 p-5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-full bg-white/10 p-2">{pillar.icon}</div>
-                      <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{pillar.title}</p>
-                    </div>
-                    <StatusBadge label="Mock en vivo" tone="info" />
-                  </div>
-                  <p className="text-lg font-semibold text-white">{pillar.summary}</p>
-                  <p className="text-sm text-zinc-300 leading-relaxed">{pillar.detail}</p>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section id="explore" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
-            <div className="flex flex-col gap-1.5">
-              <SectionHeader
-                eyebrow="Descubrimiento"
-                title="Explora la experiencia digna de DCompass"
-                description="Paneles que mezclan historia, tras bambalinas y datos para que cada equipo entienda qué entregar y qué medir desde el primer momento."
-              />
-              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
-                Cada bloque informa qué debe entregar el backend: categorías, segmentos y activos.
-              </p>
-            </div>
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {discoveryPanels.map((panel) => (
-                <Card key={panel.title} variant="glass" className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{panel.tag}</p>
-                    <StatusBadge label="Mock en vivo" tone="info" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white">{panel.title}</h3>
-                    <p className="text-sm text-zinc-300">{panel.summary}</p>
-                  </div>
-                  <div className="space-y-1 text-[0.7rem] uppercase tracking-[0.28em] text-zinc-400">
-                    {panel.fields.map((field) => (
-                      <p key={field}>{field}</p>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section id="events" className="space-y-6 scroll-mt-28 md:space-y-8 md:scroll-mt-36">
-            <div className="space-y-2">
-              <SectionHeader
-                eyebrow="Experiencias"
-                title="Eventos premium listos para convertir"
-                description="Un bloque formal de cards reutilizables que define la forma en la que DCompass comunica disponibilidad, lineups y precios sin salir del home."
-                meta={<StatusBadge label="Sprint 00008" tone="info" />}
-              />
-              <p className="max-w-3xl text-sm text-zinc-300">
-                Esta sección muestra lo que el backend deberá entregar: estados reales, narrativa de lineup, tags y precios desde el primer scroll. Cada card habla del evento como momento concreto, no como un banner efímero.
-              </p>
-              <div className="flex flex-wrap gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
-                <span className="flex items-center gap-1 text-white">
-                  <FiArrowUpRight className="text-xs" /> Descubrimiento en marcha
-                </span>
-                <span>Disponibilidad palpable</span>
-                <span>Catálogo ready</span>
-              </div>
-            </div>
-            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-              <Card variant="glass" className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Block formal de eventos</p>
-                    <h3 className="text-3xl font-semibold text-white">Una narrativa premium con datos públicos</h3>
-                  </div>
-                  <StatusBadge label="Mock en vivo" tone="positive" />
-                </div>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  Las cards deben contar historias creíbles: qué artistas, dónde, cuándo y cuánto, junto con la urgencia comercial. El backend future-ready ya sabe qué campos necesita porque los estamos exhibiendo con claridad aquí.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {eventSignals.map((signal) => (
-                    <div key={signal.label} className="rounded-2xl border border-white/10 bg-[#01030f]/70 p-3">
-                      <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">{signal.label}</p>
-                      <p className="text-sm text-zinc-200 leading-relaxed">{signal.description}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {discoveryHighlights.map((highlight) => (
-                    <div key={highlight.label} className="rounded-2xl border border-white/10 bg-[#01030f]/70 p-3">
-                      <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">{highlight.label}</p>
-                      <p className="text-sm text-zinc-200 leading-relaxed">{highlight.description}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300">
-                  <span className="font-semibold text-white">Reusabilidad</span>
-                  <span>Estados: disponible · últimos boletos · agotado</span>
-                  <span>Tags · lineup · price range</span>
-                </div>
-              </Card>
-              <div className="space-y-6">
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                  {eventShowcase.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-                <div className="flex flex-wrap items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">
-                  <span className="font-semibold text-white">Descubrimiento + conversión</span>
-                  <span>Catálogo preparado</span>
-                  <span>Disponibilidad en vivo</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section id="insights" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
-            <div className="flex flex-col gap-1.5">
-              <SectionHeader
-                eyebrow="Inteligencia"
-                title="Operaciones, demanda y señales de invitados"
-                description="La inteligencia no es un extra: es la base que da confianza a los equipos, y aquí se ve con claridad."
-              />
-              <p className="text-sm text-zinc-400">
-                Los datos estructurados muestran por qué DCompass es premium: liderazgo, control y anticipación.
-              </p>
-            </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {intelligenceStats.map((stat) => (
-                <StatCard key={stat.label} label={stat.label} value={stat.value} helper={stat.helper} tone="neutral" />
-              ))}
-            </div>
-            <div className="grid gap-5 md:grid-cols-2">
-              {intelligenceCards.map((card) => (
-                <Card key={card.title} variant="glass" className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-white">{card.title}</h3>
-                    <FiBarChart2 className="text-lg text-zinc-300" />
-                  </div>
-                  <p className="text-sm text-zinc-300">{card.summary}</p>
-                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{card.detail}</p>
-                  <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300">
-                    {card.chips.map((chip) => (
-                      <span key={chip} className="rounded-full border border-white/10 px-3 py-1">
-                        {chip}
-                      </span>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section id="backend" className="space-y-5 scroll-mt-28 md:scroll-mt-36">
-            <SectionHeader
-              eyebrow="Tras bambalinas"
-              title="Señales de datos que el backend debe entregar"
-              description="Estos mocks dejan claro qué entidades y campos necesitaremos cuando avancemos a auth y datos reales, sin romper el home actual."
-            />
-            <div className="grid gap-5 md:grid-cols-3">
-              {dataSignals.map((signal) => (
-                <Card key={signal.name} variant="glass" className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{signal.name}</h3>
-                    <FiCompass className="text-sm text-zinc-400" />
-                  </div>
-                  <p className="text-sm text-zinc-300">{signal.description}</p>
-                  <p className="text-[0.6rem] uppercase tracking-[0.28em] text-zinc-500">Campos clave</p>
-                  <div className="flex flex-wrap gap-2 text-[0.65rem] text-zinc-200">
-                    {signal.include.map((field) => (
-                      <span key={field} className="rounded-full bg-white/5 px-3 py-1 text-[0.65rem]">
-                        {field}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-400">Puntos de contacto: {signal.touchpoints}</div>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-5 rounded-3xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white">
-            <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">Próximo paso</p>
-            <h3 className="text-3xl font-semibold">Convierte este home en la puerta premium de DCompass</h3>
-            <p className="text-sm text-zinc-300">
-              El descubrimiento y la conversión no son dos etapas distintas: están enlazadas en la experiencia que acabamos de construir. Mantén el ritmo y lleva las acciones a esa siguiente llamada o demo.
-            </p>
-            <div className="flex flex-col gap-3 pt-3 text-[0.65rem] uppercase tracking-[0.3em] text-zinc-300 sm:flex-row sm:justify-center">
-              <a
-                href="#events"
-                className="rounded-full border border-white/30 px-5 py-2 font-semibold text-white transition hover:bg-white/10"
+            <div className="flex items-center justify-between border-b border-white/10 pb-5">
+              <Image src={brandAssets.mainLogo} alt="DCompass símbolo principal" width={48} height={48} className="h-10 w-10 rounded-xl object-contain" />
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center text-white transition hover:text-zinc-300"
+                aria-label="Cerrar navegación"
               >
-                Ver el calendario
-              </a>
-              <a
-                href="mailto:contact@dcompass.dev"
-                className="rounded-full bg-[#e7f2ff]/90 px-5 py-2 font-semibold uppercase tracking-[0.3em] text-[#020308] transition hover:bg-[#ffffff]"
-              >
-                Solicitar acceso
-              </a>
+                <FiX className="text-[1.4rem]" />
+              </button>
             </div>
-          </section>
-        </main>
-        <footer className="border-t border-white/10 bg-[#03050a]/70">
-          <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-10 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.32em] text-zinc-500">DCompass</p>
-              <p className="text-lg font-semibold text-white">Clientes Web</p>
-            </div>
-            <div className="flex flex-wrap gap-2 md:gap-4 text-[0.65rem] uppercase tracking-[0.32em] text-zinc-400">
+
+            <nav className="flex flex-1 flex-col gap-6 py-8">
               {navLinks.map((link) => (
-                <a key={link.label} href={link.href} className="transition hover:text-white">
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-[1.02rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:text-white"
+                >
                   {link.label}
                 </a>
               ))}
+            </nav>
+
+            <div className="border-t border-white/10 pt-6">
+              <a
+                href="#hero-vnext"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
+                style={{ color: colors.accent }}
+              >
+                Crear cuenta
+                <FiArrowRight className="text-sm" />
+              </a>
             </div>
-            <p className="text-[0.65rem] uppercase tracking-[0.32em] text-zinc-500">
-              contact@dcompass.dev · Estatus premium
-            </p>
+          </aside>
+        </div>
+
+        <section id="hero-vnext" className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+            <div className="order-2 flex flex-col gap-6 lg:order-1 lg:pr-6">
+              <div className="space-y-4">
+                <h1 className="max-w-xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl xl:text-[3.8rem]">
+                  Tu próxima gran noche empieza aquí.
+                </h1>
+                <p className="max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
+                  Todo lo que necesitas para encontrar tu siguiente plan de forma más simple.
+                </p>
+              </div>
+
+              <ul className="grid gap-3 text-sm leading-relaxed text-zinc-200 sm:max-w-xl">
+                <li className="flex items-start gap-3">
+                  <span className="mt-0.5 text-[0.95rem]" style={{ color: colors.accent }}>
+                    <FiCheck />
+                  </span>
+                  <span>Sin comisiones sorpresa. Pagas lo que ves.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-0.5 text-[0.95rem]" style={{ color: colors.accent }}>
+                    <FiCheck />
+                  </span>
+                  <span>Tu seguridad va primero.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-0.5 text-[0.95rem]" style={{ color: colors.accent }}>
+                    <FiCheck />
+                  </span>
+                  <span>Transfiere boletos fácilmente.</span>
+                </li>
+              </ul>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="#hero-vnext"
+                  className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                  style={{ background: colors.accent }}
+                >
+                  Crear cuenta
+                  <FiArrowRight className="text-sm" />
+                </a>
+                <a
+                  href="#featured-events"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
+                >
+                  <FiPlay className="text-sm" />
+                  Explorar eventos
+                </a>
+              </div>
+
+              <div className="grid gap-4 pt-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <p className="text-[0.72rem] tracking-[0.01em] text-zinc-400">Eventos publicados</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">120+</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <p className="text-[0.72rem] tracking-[0.01em] text-zinc-400">Ciudades activas</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">8</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <p className="text-[0.72rem] tracking-[0.01em] text-zinc-400">Acceso más claro</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">24/7</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#060814] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+                <div className="relative aspect-[1/1] w-full sm:aspect-[1.05/1] lg:aspect-[1/1]">
+                  <Image
+                    src="/hero/hero-v2.png"
+                    alt="Escena nightlife urbana para hero de DCompass"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,3,8,0.02),rgba(2,3,8,0.2))]" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(130,89,208,0.22),transparent_45%)]" />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,3,8,0.26),rgba(2,3,8,0.05))]" />
+                </div>
+              </div>
+            </div>
           </div>
-        </footer>
+
+          <section id="featured-events" className="grid gap-6 pt-4 lg:pt-8 scroll-mt-24">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col gap-3 sm:max-w-2xl">
+                <p className="text-[0.98rem] font-medium tracking-[0.01em] text-zinc-400">Encuentra tu siguiente plan</p>
+                <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Planes que sí dan ganas de vivir.
+                </h2>
+              </div>
+              <a href="#search-landing" className="text-sm font-medium tracking-[0.01em] transition hover:text-white" style={{ color: colors.accent }}>
+                Explorar más
+              </a>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-3">
+              {featuredEvents.map((event) => (
+                <article key={event.title} className="rounded-[1.7rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+                  <div className="mb-5 flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[0.72rem] tracking-[0.01em] text-zinc-500">{event.category}</p>
+                      <h3 className="mt-2 text-xl font-semibold text-white">{event.title}</h3>
+                    </div>
+                    <span className="shrink-0 whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
+                      {event.status}
+                    </span>
+                  </div>
+
+                  <div className="space-y-3 text-sm text-zinc-300">
+                    <p className="flex items-center gap-2">
+                      <FiClock className="text-sm" />
+                      {event.date}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <FiMapPin className="text-sm" />
+                      {event.location}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                    <p className="text-sm font-medium text-white">{event.price}</p>
+                    <a href="#featured-events" className="text-sm font-medium transition hover:text-white" style={{ color: colors.accent }}>
+                      Ver evento
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section id="benefits" className="grid gap-6 pt-2 lg:pt-6 scroll-mt-24">
+            <div className="flex flex-col gap-3 sm:max-w-2xl">
+              <p className="text-[0.98rem] font-medium tracking-[0.01em] text-zinc-400">Más claridad desde el inicio</p>
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Lo importante debería ser simple.
+              </h2>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-3">
+              {trustBenefits.map((benefit) => {
+                const Icon = benefit.icon;
+
+                return (
+                  <article key={benefit.title} className="rounded-[1.7rem] border border-white/10 bg-white/[0.035] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.24)]">
+                    <div className="flex items-start gap-4">
+                      <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                        <Icon className="text-lg" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-white">{benefit.title}</h3>
+                        <p className="mt-2 text-sm leading-relaxed text-zinc-300">{benefit.description}</p>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section id="how-it-works" className="grid gap-6 pt-2 lg:pt-6 scroll-mt-24">
+            <div className="flex flex-col gap-3 sm:max-w-2xl">
+              <p className="text-[0.98rem] font-medium tracking-[0.01em] text-zinc-400">Cómo funciona</p>
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Encontrar plan debería tomar menos tiempo.
+              </h2>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-3">
+              {howItWorks.map((item) => (
+                <article key={item.step} className="rounded-[1.7rem] border border-white/10 bg-white/[0.035] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.24)]">
+                  <div className="flex items-start gap-4">
+                    <div className="inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-lg font-semibold" style={{ color: colors.accent }}>
+                      {item.step}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-white">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-zinc-300">{item.description}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="pt-2 lg:pt-6">
+            <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] px-6 py-8 shadow-[0_30px_80px_rgba(0,0,0,0.24)] sm:px-8 sm:py-10">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div className="max-w-2xl space-y-3">
+                  <p className="text-[0.98rem] font-medium tracking-[0.01em] text-zinc-400">Empieza cuando quieras</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                    Tu siguiente plan puede empezar hoy.
+                  </h2>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    Crea tu cuenta, descubre eventos y empieza a usar DCompass de la forma más simple.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <a
+                    href="#hero-vnext"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Crear cuenta
+                    <FiArrowRight className="text-sm" />
+                  </a>
+                  <a
+                    href="#featured-events"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
+                  >
+                    Explorar eventos
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <footer className="border-t border-white/10 pt-8 pb-4">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={brandAssets.mainLogo}
+                    alt="DCompass símbolo principal"
+                    width={44}
+                    height={44}
+                    className="h-10 w-10 rounded-xl object-contain"
+                  />
+                  <Image
+                    src={brandAssets.lettersLogo}
+                    alt="DCOMPASS"
+                    width={170}
+                    height={36}
+                    className="h-5 w-auto"
+                  />
+                </div>
+                <p className="text-sm leading-relaxed text-zinc-400">
+                  Una forma más simple de descubrir eventos, encontrar tu siguiente plan y vivir mejores noches.
+                </p>
+              </div>
+
+              <div className="grid gap-8 sm:grid-cols-3">
+                <div className="space-y-3">
+                  <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Explora</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-400">
+                    <a href="#featured-events" className="transition hover:text-white">
+                      Eventos
+                    </a>
+                    <a href="#benefits" className="transition hover:text-white">
+                      Beneficios
+                    </a>
+                    <a href="#how-it-works" className="transition hover:text-white">
+                      Cómo funciona
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Cuenta</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-400">
+                    <a href="#hero-vnext" className="transition hover:text-white">
+                      Crear cuenta
+                    </a>
+                    <a href="#featured-events" className="transition hover:text-white">
+                      Explorar eventos
+                    </a>
+                    <a href="#search-landing" className="transition hover:text-white">
+                      Buscar más
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Contacto</p>
+                  <div className="flex flex-col gap-2 text-sm text-zinc-400">
+                    <a href="mailto:hola@dcompass.com" className="transition hover:text-white">
+                      hola@dcompass.com
+                    </a>
+                    <span>Ciudad de México</span>
+                    <span>Disponibilidad 24/7</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-4 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+              <p>© 2026 DCompass. Todos los derechos reservados.</p>
+              <div className="flex items-center gap-4">
+                <a href="#hero-vnext" className="transition hover:text-white">
+                  Privacidad
+                </a>
+                <a href="#hero-vnext" className="transition hover:text-white">
+                  Términos
+                </a>
+              </div>
+            </div>
+          </footer>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
