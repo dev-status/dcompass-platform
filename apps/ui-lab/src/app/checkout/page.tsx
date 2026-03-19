@@ -214,8 +214,9 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-end gap-3 text-xs text-zinc-500">
+                  <div className="mt-4 flex items-center justify-end gap-2 text-xs text-zinc-500">
                     <span>Powered by</span>
+                    <span>Mercadopago</span>
                     <Image
                       src="/payments/mercado-pago.jpg"
                       alt="Mercado Pago"
