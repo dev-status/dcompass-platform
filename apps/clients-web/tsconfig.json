@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "ESNext",
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "incremental": true,

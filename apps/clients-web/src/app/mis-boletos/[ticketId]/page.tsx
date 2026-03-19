@@ -5,37 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import { FiArrowRight, FiCalendar, FiClock, FiDownload, FiMapPin, FiTag, FiUser, FiX } from "react-icons/fi";
-
-const ticketBundleTemplate = {
-  orderId: "DCP-2048",
-  event: "Noches en Supra Roma",
-  category: "DJ Set · Roma Norte",
-  date: "Viernes 22 de marzo",
-  time: "10:00 PM",
-  venue: "Supra Roma · CDMX",
-  image: "/hero/hero-v2.png",
-  status: "Accesos listos",
-  ticketType: "General",
-  holder: "Jesús Romero",
-  purchaseSummary: "2 boletos en una sola compra",
-  accessCode: "DCP-SUPRA-2048",
-  tickets: [
-    {
-      id: "BOL-001",
-      label: "Boleto 1 de 2",
-      qrValue: "QX-2048-01",
-      accessLabel: "Acceso general",
-      owner: "Jesús Romero",
-    },
-    {
-      id: "BOL-002",
-      label: "Boleto 2 de 2",
-      qrValue: "QX-2048-02",
-      accessLabel: "Acceso general",
-      owner: "Jesús Romero",
-    },
-  ],
-};
+import { buildTicketBundle } from "@/data/ticketBundle";
 
 function formatRemaining(seconds: number) {
   const safe = Math.max(0, seconds);
@@ -54,7 +24,7 @@ export default function TicketDetailPage({ params }: { params: { ticketId: strin
   const [remainingSeconds] = useState(47);
 
   const ticketBundle = useMemo(
-    () => ({ ...ticketBundleTemplate, orderId: params.ticketId }),
+    () => buildTicketBundle(params.ticketId),
     [params.ticketId]
   );
 
@@ -190,9 +160,12 @@ export default function TicketDetailPage({ params }: { params: { ticketId: strin
                               Ver QR
                               <FiArrowRight className="text-sm" />
                             </button>
-                            <button className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white">
+                            <Link
+                              href={`/mis-boletos/${params.ticketId}/transfer`}
+                              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
+                            >
                               Transferir
-                            </button>
+                            </Link>
                           </div>
                         </div>
                       </article>
