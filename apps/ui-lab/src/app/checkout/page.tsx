@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMapPin, FiMenu, FiUser, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMapPin, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
 const navLinks = [
   { label: "Compra", href: "#top" },
+  { label: "Datos", href: "#buyer-data" },
   { label: "Pago", href: "#payment" },
   { label: "Resumen", href: "#summary" }
 ];
@@ -106,73 +107,82 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <section id="payment" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+              <section id="buyer-data" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Tus datos</p>
-                  <h2 className="text-3xl font-semibold tracking-tight text-white">Confirma tu compra.</h2>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white">Completa lo necesario para tu compra.</h2>
                   <p className="text-base leading-relaxed text-zinc-300">
-                    Tu correo ya está verificado. Solo revisa tus datos y elige cómo quieres pagar.
+                    Tu correo ya está verificado. Solo confirma tu nombre y teléfono antes de pagar.
                   </p>
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                        <FiUser className="text-base" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-zinc-400">Compra como</p>
-                        <p className="mt-2 text-base font-medium text-white">Jesús Romero</p>
-                        <p className="mt-1 text-sm text-zinc-300">jesus@correo.com</p>
-                      </div>
+                  <div className="space-y-2">
+                    <label htmlFor="buyer-name" className="text-sm font-medium text-zinc-200">
+                      Nombre
+                    </label>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                      <FiUser className="text-base" />
+                      <span className="text-sm">Jesús Romero</span>
                     </div>
                   </div>
 
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                        <FiMapPin className="text-base" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-zinc-400">Asistencia</p>
-                        <p className="mt-2 text-base font-medium text-white">2 boletos General</p>
-                        <p className="mt-1 text-sm text-zinc-300">Acceso individual · entrada regular</p>
-                      </div>
+                  <div className="space-y-2">
+                    <label htmlFor="buyer-phone" className="text-sm font-medium text-zinc-200">
+                      Teléfono
+                    </label>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                      <FiPhone className="text-base" />
+                      <span className="text-sm">+52 55 1234 5678</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-4">
-                  <p className="text-sm font-medium text-zinc-200">Método de pago</p>
-                  <div className="grid gap-4">
-                    {paymentMethods.map((method) => {
-                      const Icon = method.icon;
-                      return (
-                        <article
-                          key={method.title}
-                          className={`rounded-[1.5rem] border p-5 ${method.active ? "border-white/20 bg-white/[0.05]" : "border-white/10 bg-white/[0.03]"}`}
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                              <Icon className="text-base" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-3">
-                                <h3 className="text-base font-semibold text-white">{method.title}</h3>
-                                {method.active && (
-                                  <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
-                                    Seleccionado
-                                  </span>
-                                )}
-                              </div>
-                              <p className="mt-2 text-sm leading-relaxed text-zinc-300">{method.description}</p>
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    })}
+                <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5" style={{ color: colors.accent }}>
+                      <FiCheckCircle className="text-base" />
+                    </span>
+                    <p className="text-sm leading-relaxed text-zinc-100">
+                      Para eventos de alta demanda, antes de finalizar la compra te enviaremos un código OTP a tu correo para confirmar la operación.
+                    </p>
                   </div>
+                </div>
+              </section>
+
+              <section id="payment" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Método de pago</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white">Paga con tarjeta.</h2>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    Selecciona tu método y revisa el total antes de confirmar.
+                  </p>
+                </div>
+
+                <div className="mt-6 grid gap-4">
+                  {paymentMethods.map((method) => {
+                    const Icon = method.icon;
+                    return (
+                      <article key={method.title} className="rounded-[1.5rem] border border-white/20 bg-white/[0.05] p-5">
+                        <div className="flex items-start gap-4">
+                          <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                            <Icon className="text-base" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <h3 className="text-base font-semibold text-white">{method.title}</h3>
+                              {method.active && (
+                                <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
+                                  Seleccionado
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-2 text-sm leading-relaxed text-zinc-300">{method.description}</p>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               </section>
             </div>
@@ -220,7 +230,6 @@ export default function CheckoutPage() {
                   </button>
                 </div>
               </section>
-
             </aside>
           </div>
 
