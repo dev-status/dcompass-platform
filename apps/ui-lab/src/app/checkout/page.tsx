@@ -24,6 +24,8 @@ const paymentMethods = [
 
 export default function CheckoutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [otpStep, setOtpStep] = useState<"closed" | "confirm" | "input">("closed");
+  const [otpValue, setOtpValue] = useState("");
 
   return (
     <main id="top" className="min-h-screen bg-[#020308] text-white">
@@ -118,9 +120,7 @@ export default function CheckoutPage() {
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label htmlFor="buyer-name" className="text-sm font-medium text-zinc-200">
-                      Nombre
-                    </label>
+                    <label className="text-sm font-medium text-zinc-200">Nombre</label>
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
                       <FiUser className="text-base" />
                       <span className="text-sm">Jesús Romero</span>
@@ -128,16 +128,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="buyer-phone" className="text-sm font-medium text-zinc-200">
-                      Teléfono
-                    </label>
+                    <label className="text-sm font-medium text-zinc-200">Teléfono</label>
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
                       <FiPhone className="text-base" />
                       <span className="text-sm">+52 55 1234 5678</span>
                     </div>
                   </div>
                 </div>
-
               </section>
 
               <section id="payment" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
@@ -161,11 +158,7 @@ export default function CheckoutPage() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between gap-3">
                               <h3 className="text-base font-semibold text-white">{method.title}</h3>
-                              {method.active && (
-                                <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
-                                  Seleccionado
-                                </span>
-                              )}
+                              {method.active && <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">Seleccionado</span>}
                             </div>
                             <p className="mt-2 text-sm leading-relaxed text-zinc-300">{method.description}</p>
                           </div>
@@ -211,7 +204,11 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3">
-                  <button className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110" style={{ background: colors.accent }}>
+                  <button
+                    onClick={() => setOtpStep("confirm")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
                     Pagar ahora
                     <FiArrowRight className="text-sm" />
                   </button>
@@ -231,6 +228,89 @@ export default function CheckoutPage() {
           </div>
         </section>
       </div>
+
+      {otpStep !== "closed" && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5">
+          <button
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            aria-label="Cerrar verificación"
+            onClick={() => setOtpStep("closed")}
+          />
+
+          <div className="relative z-[61] w-full max-w-xl rounded-[2rem] border border-white/10 bg-[#070914] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)] sm:p-8">
+            {otpStep === "confirm" ? (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Verifica tu compra</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white">Necesitamos confirmar esta operación.</h2>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    Enviaremos un código de verificación a <span className="font-medium text-white">jesus@correo.com</span>. Es necesario para continuar.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => setOtpStep("input")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Enviar código
+                    <FiArrowRight className="text-sm" />
+                  </button>
+                  <button
+                    onClick={() => setOtpStep("closed")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Ingresa tu código</p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-white">Verifica para continuar.</h2>
+                  <p className="text-base leading-relaxed text-zinc-300">
+                    Te enviamos un código a <span className="font-medium text-white">jesus@correo.com</span>. Escríbelo aquí para continuar con tu compra.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-200">Código OTP</label>
+                  <input
+                    value={otpValue}
+                    onChange={(event) => setOtpValue(event.target.value)}
+                    placeholder="123456"
+                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-400">
+                  <span>04:59</span>
+                  <button className="transition hover:text-white">Reenviar código</button>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    disabled={otpValue.trim().length < 6}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ background: colors.accent }}
+                  >
+                    Verificar código
+                    <FiArrowRight className="text-sm" />
+                  </button>
+                  <button
+                    onClick={() => setOtpStep("closed")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
