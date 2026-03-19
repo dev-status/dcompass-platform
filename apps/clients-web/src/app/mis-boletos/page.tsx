@@ -153,13 +153,14 @@ export default function MisBoletosPage() {
                           </div>
 
                           <div className="flex flex-col gap-3 sm:flex-row">
-                            <button
+                            <Link
+                              href={`/mis-boletos/${ticket.id}`}
                               className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                               style={{ background: colors.accent }}
                             >
                               Ver boleto
                               <FiArrowRight className="text-sm" />
-                            </button>
+                            </Link>
                             <button className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white">
                               Descargar comprobante
                             </button>
