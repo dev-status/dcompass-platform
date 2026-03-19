@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { brandAssets, colors, FullscreenLoader } from "@dcompass/ui";
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
@@ -14,6 +15,7 @@ const navLinks = [
 ];
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [otpStep, setOtpStep] = useState<"closed" | "confirm" | "input">("closed");
   const [otpValue, setOtpValue] = useState("");
@@ -63,6 +65,7 @@ export default function CheckoutPage() {
       setCheckoutLoaderVisible(false);
       setOtpStep("closed");
       setOtpValue("");
+      router.push("/checkout/success");
     }, 2400);
   };
 
