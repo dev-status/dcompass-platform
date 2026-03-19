@@ -2,6 +2,7 @@ export * from "./components/Button";
 export * from "./components/Card";
 export * from "./components/ColorSwatch";
 export * from "./components/EmptyState";
+export * from "./components/FullscreenLoader";
 export * from "./components/HeroPanel";
 export * from "./components/InputField";
 export * from "./components/SectionHeader";

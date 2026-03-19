@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { brandAssets, colors } from "@dcompass/ui";
+import { useRouter } from "next/navigation";
+import { brandAssets, colors, FullscreenLoader } from "@dcompass/ui";
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
 const navLinks = [
@@ -14,9 +15,11 @@ const navLinks = [
 ];
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [otpStep, setOtpStep] = useState<"closed" | "confirm" | "input">("closed");
   const [otpValue, setOtpValue] = useState("");
+  const [checkoutLoaderVisible, setCheckoutLoaderVisible] = useState(false);
   const [buyerName, setBuyerName] = useState("Jesús Romero");
   const [buyerPhone] = useState("5512345678");
   const [cardNumber, setCardNumber] = useState("");
@@ -55,6 +58,16 @@ export default function CheckoutPage() {
   const isBuyerNameValid = buyerName.trim().length >= 3;
   const isCardholderNameValid = cardholderName.trim().length >= 3;
   const isPhoneValid = sanitizedPhoneDigits.length === 10;
+
+  const handleVerifyCode = () => {
+    setCheckoutLoaderVisible(true);
+    window.setTimeout(() => {
+      setCheckoutLoaderVisible(false);
+      setOtpStep("closed");
+      setOtpValue("");
+      router.push("/checkout/success");
+    }, 2400);
+  };
 
   return (
     <main id="top" className="min-h-screen bg-[#020308] text-white">
@@ -121,6 +134,17 @@ export default function CheckoutPage() {
         </div>
 
         <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="space-y-3">
+            <Link href="/ticket-selection" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+              <FiArrowLeft className="text-sm" />
+              Volver a boletos
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Continuar compra</h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Confirma tus datos, revisa tu compra y completa tu pago sin perder contexto de dónde estás.</p>
+            </div>
+          </div>
+
           <div className="grid gap-8 xl:grid-cols-[0.98fr_1.02fr] xl:items-start">
             <div className="space-y-6">
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
@@ -129,8 +153,7 @@ export default function CheckoutPage() {
                     <Image src="/hero/hero-v2.png" alt="Noches en Supra Roma" fill className="object-cover" />
                   </div>
                   <div className="space-y-2">
-                    <p className="text-[0.82rem] font-medium tracking-[0.08em] text-zinc-400">Continuar compra</p>
-                    <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Noches en Supra Roma.</h1>
+                    <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Noches en Supra Roma.</h2>
                     <p className="text-sm leading-relaxed text-zinc-300">Viernes 22 de marzo · 10:00 PM · Supra Roma · Ciudad de México</p>
                   </div>
                 </div>
@@ -318,7 +341,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <button disabled={otpValue.trim().length < 6} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50" style={{ background: colors.accent }}>
+                  <button onClick={handleVerifyCode} disabled={otpValue.trim().length < 6} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50" style={{ background: colors.accent }}>
                     Verificar código
                     <FiArrowRight className="text-sm" />
                   </button>
@@ -331,6 +354,13 @@ export default function CheckoutPage() {
           </div>
         </div>
       )}
+
+      <FullscreenLoader
+        isOpen={checkoutLoaderVisible}
+        label="Procesando compra"
+        title="Estamos preparando tus boletos."
+        description="Verificando tu pago, confirmando tu acceso y dejando listo el siguiente paso sin sacarte del flujo."
+      />
     </main>
   );
 }
