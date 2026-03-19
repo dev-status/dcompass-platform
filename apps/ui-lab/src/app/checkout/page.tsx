@@ -142,7 +142,7 @@ export default function CheckoutPage() {
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Método de pago</p>
                   <h2 className="text-3xl font-semibold tracking-tight text-white">Paga con tarjeta.</h2>
                   <p className="text-base leading-relaxed text-zinc-300">
-                    Selecciona tu método y revisa el total antes de confirmar.
+                    Revisa tus datos e ingresa la información de tu tarjeta para continuar.
                   </p>
                 </div>
 
@@ -166,6 +166,40 @@ export default function CheckoutPage() {
                       </article>
                     );
                   })}
+                </div>
+
+                <div className="mt-6 grid gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-zinc-200">Número de tarjeta</label>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                      <FiCreditCard className="text-base" />
+                      <span className="text-sm">4242 4242 4242 4242</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-zinc-200">Nombre del titular</label>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                      <FiUser className="text-base" />
+                      <span className="text-sm">Jesús Romero</span>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-zinc-200">Expiración</label>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-300">
+                        12/29
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-zinc-200">CVV</label>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-300">
+                        123
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
             </div>
