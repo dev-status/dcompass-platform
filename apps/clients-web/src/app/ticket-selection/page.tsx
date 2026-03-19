@@ -91,6 +91,17 @@ export default function TicketSelectionPage() {
         </div>
 
         <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="space-y-3">
+            <Link href="/events/demo" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+              <FiArrowLeft className="text-sm" />
+              Volver al evento
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Compra de boletos</h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Elige tus accesos, revisa tu resumen y prepara tu compra antes de pasar al pago.</p>
+            </div>
+          </div>
+
           <div className="grid gap-8 xl:grid-cols-[0.98fr_1.02fr] xl:items-start">
             <div className="space-y-6">
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
@@ -99,8 +110,7 @@ export default function TicketSelectionPage() {
                     <Image src="/hero/hero-v2.png" alt="Noches en Supra Roma" fill className="object-cover" />
                   </div>
                   <div className="space-y-2">
-                    <p className="text-[0.82rem] font-medium tracking-[0.08em] text-zinc-400">Compra de boletos</p>
-                    <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Noches en Supra Roma.</h1>
+                    <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Noches en Supra Roma.</h2>
                     <p className="text-sm leading-relaxed text-zinc-300">Viernes 22 de marzo · 10:00 PM · Supra Roma · Ciudad de México</p>
                   </div>
                 </div>
