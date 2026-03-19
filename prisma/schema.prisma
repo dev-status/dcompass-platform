@@ -166,6 +166,8 @@ model User {
   emailVerified      Boolean              @default(false) @map("email_verified")
   fullName           String               @map("full_name")
   phone              String?
+  avatarUrl          String?              @map("avatar_url")
+  lastLoginAt        DateTime?            @map("last_login_at")
   status             UserStatus           @default(active)
   createdAt          DateTime             @default(now()) @map("created_at")
   updatedAt          DateTime             @updatedAt @map("updated_at")

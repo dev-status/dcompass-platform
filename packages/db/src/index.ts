@@ -16,6 +16,8 @@ if (process.env.NODE_ENV !== "production") {
 
 export type DbClient = PrismaClient;
 
+export * from "./users";
+
 export async function checkDbConnection() {
   await prisma.$queryRaw`SELECT 1`;
   return { ok: true };
