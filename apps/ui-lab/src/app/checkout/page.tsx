@@ -169,21 +169,6 @@ export default function CheckoutPage() {
                   <p className="text-base leading-relaxed text-zinc-300">Revisa tus datos e ingresa la información de tu tarjeta para continuar.</p>
                 </div>
 
-                <div className="mt-6 rounded-[1.5rem] border border-white/20 bg-white/[0.05] p-5">
-                  <div className="flex items-start gap-4">
-                    <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                      <FiCreditCard className="text-base" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-base font-semibold text-white">Tarjeta</h3>
-                        <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">Seleccionado</span>
-                      </div>
-                      <p className="mt-2 text-sm leading-relaxed text-zinc-300">Pago con tarjeta de crédito o débito.</p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="mt-6 grid gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-200">Número de tarjeta</label>
@@ -227,6 +212,17 @@ export default function CheckoutPage() {
                       />
                       {!isCvvValid && <p className="text-xs text-amber-300">Ingresa 3 o 4 dígitos.</p>}
                     </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-end gap-3 text-xs text-zinc-500">
+                    <span>Powered by</span>
+                    <Image
+                      src="/payments/mercado-pago.jpg"
+                      alt="Mercado Pago"
+                      width={88}
+                      height={32}
+                      className="h-7 w-auto rounded-lg object-contain"
+                    />
                   </div>
                 </div>
               </section>
