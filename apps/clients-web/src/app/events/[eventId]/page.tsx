@@ -155,17 +155,17 @@ export default function EventDetailPage({ params }: { params: { eventId: string 
                 <div className="mt-6 grid gap-4">
                   {ticketTypes.map((ticket) => (
                     <article key={ticket.name} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5">
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-start gap-3">
-                            <h3 className="min-h-[3.5rem] text-lg font-semibold leading-snug text-white sm:min-h-[2rem]">{ticket.name}</h3>
+                          <div className="flex min-h-[2rem] items-start justify-between gap-3">
+                            <h3 className="pr-2 text-lg font-semibold leading-snug text-white">{ticket.name}</h3>
                             <span className="shrink-0 whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
                               {ticket.availability}
                             </span>
                           </div>
                           <p className="mt-2 text-sm leading-relaxed text-zinc-300">{ticket.description}</p>
                         </div>
-                        <p className="shrink-0 text-sm font-medium text-white">{ticket.price}</p>
+                        <p className="shrink-0 text-sm font-medium text-white sm:pt-0.5">{ticket.price}</p>
                       </div>
                     </article>
                   ))}
