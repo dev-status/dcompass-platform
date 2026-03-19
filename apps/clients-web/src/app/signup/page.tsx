@@ -80,18 +80,26 @@ export default function Page() {
           </section>
 
           <section className="flex items-center justify-center">
-            <div className="w-full max-w-[34rem] rounded-[2rem] border border-white/10 bg-white/[0.04] px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-              <div className="space-y-8">
+            <div className="w-full max-w-[34rem] space-y-5">
+              <div className="space-y-3">
+                <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+                  <FiArrowLeft className="text-sm" />
+                  Volver al inicio
+                </Link>
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Crea tu cuenta</h1>
+                  <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Empieza con tus datos y deja listo tu acceso a eventos, boletos y próximos planes.</p>
+                </div>
+              </div>
+
+              <div className="w-full max-w-[34rem] rounded-[2rem] border border-white/10 bg-white/[0.04] px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+                <div className="space-y-8">
                 <div className="space-y-4">
                   <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
                     <FiStar className="text-lg" />
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-[0.82rem] font-medium tracking-[0.08em] text-zinc-400">Registro</p>
-                    <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-[2.2rem]">
-                      Crea tu cuenta
-                    </h2>
                     <p className="max-w-md text-base leading-relaxed text-zinc-300">
                       Empieza con tus datos y deja listo tu acceso a eventos, boletos y próximos planes.
                     </p>
@@ -199,17 +207,18 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 border-t border-white/10 pt-5 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
-                  <p>
-                    ¿Ya tienes acceso?{" "}
-                    <Link href="/login" className="font-medium transition hover:text-white" style={{ color: colors.accent }}>
-                      Inicia sesión
+                  <div className="flex flex-col gap-3 border-t border-white/10 pt-5 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+                    <p>
+                      ¿Ya tienes acceso?{" "}
+                      <Link href="/login" className="font-medium transition hover:text-white" style={{ color: colors.accent }}>
+                        Inicia sesión
+                      </Link>
+                    </p>
+                    <Link href="/" className="inline-flex items-center gap-2 transition hover:text-white">
+                      <FiArrowLeft className="text-sm" />
+                      Volver al inicio
                     </Link>
-                  </p>
-                  <Link href="/" className="inline-flex items-center gap-2 transition hover:text-white">
-                    <FiArrowLeft className="text-sm" />
-                    Volver al inicio
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>

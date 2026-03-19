@@ -124,6 +124,17 @@ export default function EventDetailPage({ params }: { params: { eventId: string 
         </div>
 
         <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="space-y-3">
+            <Link href="/events" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+              <FiArrowLeft className="text-sm" />
+              Volver a eventos
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Detalle del evento</h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Revisa la vibra, los boletos y la información clave del evento antes de decidir cómo entrar.</p>
+            </div>
+          </div>
+
           <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
             <div className="space-y-6">
               <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070914] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">

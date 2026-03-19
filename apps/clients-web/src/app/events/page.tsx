@@ -149,16 +149,18 @@ export default function Page() {
         </div>
 
         <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-8 sm:px-6 lg:px-10 lg:py-10">
-          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-end">
-            <div className="space-y-5">
-              <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Explorar eventos</p>
-              <h1 className="max-w-xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl xl:text-[3.7rem]">
-                Encuentra tu siguiente plan sin perder tiempo.
-              </h1>
-              <p className="max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-                Busca por zona, fecha o tipo de evento y encuentra opciones que sí dan ganas de vivir.
-              </p>
+          <div className="space-y-3">
+            <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+              <FiArrowLeft className="text-sm" />
+              Volver al inicio
+            </Link>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Explorar eventos</h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Busca por zona, fecha o tipo de evento y encuentra opciones que sí dan ganas de vivir.</p>
             </div>
+          </div>
+
+          <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr] xl:items-end">
 
             <div id="filters" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
               <div className="grid gap-4 lg:grid-cols-[1.3fr_0.8fr_0.8fr_auto]">
