@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
@@ -50,6 +50,20 @@ export default function CheckoutPage() {
   const isBuyerNameValid = buyerName.trim().length >= 3;
   const isCardholderNameValid = cardholderName.trim().length >= 3;
   const isPhoneValid = sanitizedPhoneDigits.length === 10;
+
+  useEffect(() => {
+    if (otpStep === "closed") {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [otpStep]);
 
   return (
     <main id="top" className="min-h-screen bg-[#020308] text-white">
@@ -272,7 +286,7 @@ export default function CheckoutPage() {
       </div>
 
       {otpStep !== "closed" && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto px-5 pt-[10vh] pb-6 sm:pt-[12vh]">
           <button className="absolute inset-0 bg-black/70 backdrop-blur-sm" aria-label="Cerrar verificación" onClick={() => setOtpStep("closed")} />
 
           <div className="relative z-[61] w-full max-w-xl rounded-[2rem] border border-white/10 bg-[#070914] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)] sm:p-8">
