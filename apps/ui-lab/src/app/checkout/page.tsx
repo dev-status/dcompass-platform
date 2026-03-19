@@ -138,16 +138,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="mt-0.5" style={{ color: colors.accent }}>
-                      <FiCheckCircle className="text-base" />
-                    </span>
-                    <p className="text-sm leading-relaxed text-zinc-100">
-                      Para eventos de alta demanda, antes de finalizar la compra te enviaremos un código OTP a tu correo para confirmar la operación.
-                    </p>
-                  </div>
-                </div>
               </section>
 
               <section id="payment" className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
