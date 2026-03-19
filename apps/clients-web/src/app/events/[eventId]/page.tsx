@@ -156,16 +156,16 @@ export default function EventDetailPage({ params }: { params: { eventId: string 
                   {ticketTypes.map((ticket) => (
                     <article key={ticket.name} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5">
                       <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-semibold text-white">{ticket.name}</h3>
-                            <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start gap-3">
+                            <h3 className="min-h-[3.5rem] text-lg font-semibold leading-snug text-white sm:min-h-[2rem]">{ticket.name}</h3>
+                            <span className="shrink-0 whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
                               {ticket.availability}
                             </span>
                           </div>
                           <p className="mt-2 text-sm leading-relaxed text-zinc-300">{ticket.description}</p>
                         </div>
-                        <p className="text-sm font-medium text-white">{ticket.price}</p>
+                        <p className="shrink-0 text-sm font-medium text-white">{ticket.price}</p>
                       </div>
                     </article>
                   ))}
@@ -197,11 +197,15 @@ export default function EventDetailPage({ params }: { params: { eventId: string 
                     const Icon = item.icon;
                     return (
                       <div key={item.label} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
-                        <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                          <Icon className="text-base" />
+                        <div className="flex items-start gap-4">
+                          <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                            <Icon className="text-base" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-zinc-400">{item.label}</p>
+                            <p className="mt-2 text-base font-medium text-white">{item.value}</p>
+                          </div>
                         </div>
-                        <p className="text-sm font-medium text-zinc-400">{item.label}</p>
-                        <p className="mt-2 text-base font-medium text-white">{item.value}</p>
                       </div>
                     );
                   })}
