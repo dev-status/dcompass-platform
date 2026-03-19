@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMapPin, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
 const navLinks = [
   { label: "Compra", href: "#top" },
