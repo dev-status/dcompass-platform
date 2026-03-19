@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMenu, FiPhone, FiUser, FiX } from "react-icons/fi";
 
@@ -13,19 +13,48 @@ const navLinks = [
   { label: "Resumen", href: "#summary" }
 ];
 
-const paymentMethods = [
-  {
-    title: "Tarjeta",
-    description: "Pago con tarjeta de crédito o débito",
-    icon: FiCreditCard,
-    active: true
-  }
-];
-
 export default function CheckoutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [otpStep, setOtpStep] = useState<"closed" | "confirm" | "input">("closed");
   const [otpValue, setOtpValue] = useState("");
+  const [buyerName, setBuyerName] = useState("Jesús Romero");
+  const [buyerPhone] = useState("5512345678");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardholderName, setCardholderName] = useState("Jesús Romero");
+  const [expiration, setExpiration] = useState("");
+  const [cvv, setCvv] = useState("");
+
+  const sanitizedCardDigits = useMemo(() => cardNumber.replace(/\D/g, ""), [cardNumber]);
+  const sanitizedExpirationDigits = useMemo(() => expiration.replace(/\D/g, ""), [expiration]);
+  const sanitizedCvvDigits = useMemo(() => cvv.replace(/\D/g, ""), [cvv]);
+  const sanitizedPhoneDigits = useMemo(() => buyerPhone.replace(/\D/g, ""), [buyerPhone]);
+
+  const handleCardNumberChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 16);
+    const grouped = digits.replace(/(.{4})/g, "$1 ").trim();
+    setCardNumber(grouped);
+  };
+
+  const handleExpirationChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+    const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    setExpiration(formatted);
+  };
+
+  const handleCvvChange = (value: string) => {
+    setCvv(value.replace(/\D/g, "").slice(0, 4));
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setBuyerPhone(value.replace(/\D/g, "").slice(0, 10));
+  };
+
+  const isCardNumberValid = sanitizedCardDigits.length === 16;
+  const isExpirationValid = /^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(expiration);
+  const isCvvValid = sanitizedCvvDigits.length >= 3;
+  const isBuyerNameValid = buyerName.trim().length >= 3;
+  const isCardholderNameValid = cardholderName.trim().length >= 3;
+  const isPhoneValid = sanitizedPhoneDigits.length === 10;
 
   return (
     <main id="top" className="min-h-screen bg-[#020308] text-white">
@@ -87,9 +116,7 @@ export default function CheckoutPage() {
               ))}
             </nav>
 
-            <div className="border-t border-white/10 pt-6 text-sm text-zinc-300">
-              Pago protegido
-            </div>
+            <div className="border-t border-white/10 pt-6 text-sm text-zinc-300">Pago protegido</div>
           </aside>
         </div>
 
@@ -113,25 +140,23 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Tus datos</p>
                   <h2 className="text-3xl font-semibold tracking-tight text-white">Completa lo necesario para tu compra.</h2>
-                  <p className="text-base leading-relaxed text-zinc-300">
-                    Tu correo ya está verificado. Solo confirma tu nombre y teléfono antes de pagar.
-                  </p>
+                  <p className="text-base leading-relaxed text-zinc-300">Tu correo ya está verificado. Solo confirma tu nombre y teléfono antes de pagar.</p>
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-200">Nombre</label>
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-zinc-300 opacity-90">
                       <FiUser className="text-base" />
-                      <span className="text-sm">Jesús Romero</span>
+                      <span className="text-sm text-white">{buyerName}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-200">Teléfono</label>
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-zinc-300 opacity-90">
                       <FiPhone className="text-base" />
-                      <span className="text-sm">+52 55 1234 5678</span>
+                      <span className="text-sm text-white">{buyerPhone}</span>
                     </div>
                   </div>
                 </div>
@@ -141,31 +166,22 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Método de pago</p>
                   <h2 className="text-3xl font-semibold tracking-tight text-white">Paga con tarjeta.</h2>
-                  <p className="text-base leading-relaxed text-zinc-300">
-                    Revisa tus datos e ingresa la información de tu tarjeta para continuar.
-                  </p>
+                  <p className="text-base leading-relaxed text-zinc-300">Revisa tus datos e ingresa la información de tu tarjeta para continuar.</p>
                 </div>
 
-                <div className="mt-6 grid gap-4">
-                  {paymentMethods.map((method) => {
-                    const Icon = method.icon;
-                    return (
-                      <article key={method.title} className="rounded-[1.5rem] border border-white/20 bg-white/[0.05] p-5">
-                        <div className="flex items-start gap-4">
-                          <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                            <Icon className="text-base" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-3">
-                              <h3 className="text-base font-semibold text-white">{method.title}</h3>
-                              {method.active && <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">Seleccionado</span>}
-                            </div>
-                            <p className="mt-2 text-sm leading-relaxed text-zinc-300">{method.description}</p>
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  })}
+                <div className="mt-6 rounded-[1.5rem] border border-white/20 bg-white/[0.05] p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="inline-flex shrink-0 rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                      <FiCreditCard className="text-base" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-base font-semibold text-white">Tarjeta</h3>
+                        <span className="rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">Seleccionado</span>
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-300">Pago con tarjeta de crédito o débito.</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-6 grid gap-4">
@@ -173,31 +189,43 @@ export default function CheckoutPage() {
                     <label className="text-sm font-medium text-zinc-200">Número de tarjeta</label>
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
                       <FiCreditCard className="text-base" />
-                      <span className="text-sm">4242 4242 4242 4242</span>
+                      <input value={cardNumber} onChange={(e) => handleCardNumberChange(e.target.value)} inputMode="numeric" placeholder="1234 5678 9012 3456" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-500" />
                     </div>
+                    {!isCardNumberValid && <p className="text-xs text-amber-300">La tarjeta debe tener 16 dígitos.</p>}
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-200">Nombre del titular</label>
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-zinc-300">
                       <FiUser className="text-base" />
-                      <span className="text-sm">Jesús Romero</span>
+                      <input value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} placeholder="Nombre del titular" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-500" />
                     </div>
+                    {!isCardholderNameValid && <p className="text-xs text-amber-300">Ingresa el nombre como aparece en tu tarjeta.</p>}
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-zinc-200">Expiración</label>
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-300">
-                        12/29
-                      </div>
+                      <input
+                        value={expiration}
+                        onChange={(e) => handleExpirationChange(e.target.value)}
+                        inputMode="numeric"
+                        placeholder="MM/AA"
+                        className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-500"
+                      />
+                      {!isExpirationValid && <p className="text-xs text-amber-300">Usa el formato MM/AA.</p>}
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-zinc-200">CVV</label>
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-300">
-                        123
-                      </div>
+                      <input
+                        value={cvv}
+                        onChange={(e) => handleCvvChange(e.target.value)}
+                        inputMode="numeric"
+                        placeholder="CVV"
+                        className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-500"
+                      />
+                      {!isCvvValid && <p className="text-xs text-amber-300">Ingresa 3 o 4 dígitos.</p>}
                     </div>
                   </div>
                 </div>
@@ -212,35 +240,23 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-6 space-y-4 text-sm text-zinc-300">
-                  <div className="flex items-center justify-between gap-4">
-                    <span>2 × General</span>
-                    <span>$560 MXN</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Comisiones</span>
-                    <span>$0 MXN</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4 text-base font-semibold text-white">
-                    <span>Total</span>
-                    <span>$560 MXN</span>
-                  </div>
+                  <div className="flex items-center justify-between gap-4"><span>2 × General</span><span>$560 MXN</span></div>
+                  <div className="flex items-center justify-between gap-4"><span>Comisiones</span><span>$0 MXN</span></div>
+                  <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4 text-base font-semibold text-white"><span>Total</span><span>$560 MXN</span></div>
                 </div>
 
                 <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
                   <div className="flex items-start gap-3">
-                    <span className="mt-0.5" style={{ color: colors.accent }}>
-                      <FiCheckCircle className="text-base" />
-                    </span>
-                    <p className="text-sm leading-relaxed text-zinc-100">
-                      Sin comisiones sorpresa. El total que ves aquí es el que pagarías al confirmar.
-                    </p>
+                    <span className="mt-0.5" style={{ color: colors.accent }}><FiCheckCircle className="text-base" /></span>
+                    <p className="text-sm leading-relaxed text-zinc-100">Sin comisiones sorpresa. El total que ves aquí es el que pagarías al confirmar.</p>
                   </div>
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3">
                   <button
                     onClick={() => setOtpStep("confirm")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    disabled={!(isBuyerNameValid && isPhoneValid && isCardNumberValid && isCardholderNameValid && isExpirationValid && isCvvValid)}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ background: colors.accent }}
                   >
                     Pagar ahora
@@ -265,11 +281,7 @@ export default function CheckoutPage() {
 
       {otpStep !== "closed" && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-5">
-          <button
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            aria-label="Cerrar verificación"
-            onClick={() => setOtpStep("closed")}
-          />
+          <button className="absolute inset-0 bg-black/70 backdrop-blur-sm" aria-label="Cerrar verificación" onClick={() => setOtpStep("closed")} />
 
           <div className="relative z-[61] w-full max-w-xl rounded-[2rem] border border-white/10 bg-[#070914] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)] sm:p-8">
             {otpStep === "confirm" ? (
@@ -277,24 +289,15 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Verifica tu compra</p>
                   <h2 className="text-3xl font-semibold tracking-tight text-white">Necesitamos confirmar esta operación.</h2>
-                  <p className="text-base leading-relaxed text-zinc-300">
-                    Enviaremos un código de verificación a <span className="font-medium text-white">jesus@correo.com</span>. Es necesario para continuar.
-                  </p>
+                  <p className="text-base leading-relaxed text-zinc-300">Enviaremos un código de verificación a <span className="font-medium text-white">jesus@correo.com</span>. Es necesario para continuar.</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    onClick={() => setOtpStep("input")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                    style={{ background: colors.accent }}
-                  >
+                  <button onClick={() => setOtpStep("input")} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110" style={{ background: colors.accent }}>
                     Enviar código
                     <FiArrowRight className="text-sm" />
                   </button>
-                  <button
-                    onClick={() => setOtpStep("closed")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
-                  >
+                  <button onClick={() => setOtpStep("closed")} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white">
                     Cancelar
                   </button>
                 </div>
@@ -304,19 +307,12 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Ingresa tu código</p>
                   <h2 className="text-3xl font-semibold tracking-tight text-white">Verifica para continuar.</h2>
-                  <p className="text-base leading-relaxed text-zinc-300">
-                    Te enviamos un código a <span className="font-medium text-white">jesus@correo.com</span>. Escríbelo aquí para continuar con tu compra.
-                  </p>
+                  <p className="text-base leading-relaxed text-zinc-300">Te enviamos un código a <span className="font-medium text-white">jesus@correo.com</span>. Escríbelo aquí para continuar con tu compra.</p>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-200">Código OTP</label>
-                  <input
-                    value={otpValue}
-                    onChange={(event) => setOtpValue(event.target.value)}
-                    placeholder="123456"
-                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25"
-                  />
+                  <input value={otpValue} onChange={(event) => setOtpValue(event.target.value)} placeholder="123456" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25" />
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-400">
@@ -325,18 +321,11 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    disabled={otpValue.trim().length < 6}
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{ background: colors.accent }}
-                  >
+                  <button disabled={otpValue.trim().length < 6} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.86rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50" style={{ background: colors.accent }}>
                     Verificar código
                     <FiArrowRight className="text-sm" />
                   </button>
-                  <button
-                    onClick={() => setOtpStep("closed")}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
-                  >
+                  <button onClick={() => setOtpStep("closed")} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.86rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white">
                     Cancelar
                   </button>
                 </div>
