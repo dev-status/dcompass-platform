@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMapPin, FiMenu, FiShield, FiSmartphone, FiUser, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiCreditCard, FiLock, FiMapPin, FiMenu, FiUser, FiX } from "react-icons/fi";
 
 const navLinks = [
   { label: "Compra", href: "#top" },
@@ -18,12 +18,6 @@ const paymentMethods = [
     description: "Pago con tarjeta de crédito o débito",
     icon: FiCreditCard,
     active: true
-  },
-  {
-    title: "Wallet",
-    description: "Apple Pay o Google Pay cuando aplique",
-    icon: FiSmartphone,
-    active: false
   }
 ];
 
@@ -227,19 +221,6 @@ export default function CheckoutPage() {
                 </div>
               </section>
 
-              <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
-                <div className="flex items-start gap-4">
-                  <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                    <FiShield className="text-base" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">Pago protegido</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                      Antes de confirmar, todavía puedes revisar tu compra, cambiar método de pago o volver al paso anterior sin perder el contexto.
-                    </p>
-                  </div>
-                </div>
-              </section>
             </aside>
           </div>
 
