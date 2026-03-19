@@ -1,12 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowRight, FiCheckCircle, FiDownload, FiMapPin, FiShield, FiTicket } from "react-icons/fi";
+import { FiArrowRight, FiCheckCircle, FiDownload, FiTag } from "react-icons/fi";
 
 const ticketHighlights = [
   "Tus accesos ya quedaron confirmados y listos para consultarse cuando quieras.",
   "Recibirás tus boletos en tu correo y también estarán disponibles dentro de tu cuenta.",
-  "El siguiente paso natural es revisarlos en Mis boletos o seguir explorando eventos."
 ];
 
 export default function CheckoutSuccessPage() {
@@ -35,7 +34,7 @@ export default function CheckoutSuccessPage() {
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Tus boletos ya están listos.</h1>
-              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">La compra se procesó correctamente y tu acceso para Noches en Supra Roma quedó confirmado.</p>
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Tu acceso para Noches en Supra Roma quedó confirmado.</p>
             </div>
           </div>
 
@@ -87,7 +86,7 @@ export default function CheckoutSuccessPage() {
               <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
                 <div className="space-y-3">
                   <p className="text-[0.84rem] font-medium tracking-[0.08em] text-zinc-400">Siguiente paso</p>
-                  <h2 className="text-2xl font-semibold tracking-tight text-white">Lo natural ahora es ir a Mis boletos.</h2>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white">Revisa tus boletos cuando quieras.</h2>
                   <p className="text-sm leading-relaxed text-zinc-300">Desde ahí podrías revisar accesos, encontrar el QR y volver a consultar esta compra cuando quieras.</p>
                 </div>
 
@@ -105,7 +104,7 @@ export default function CheckoutSuccessPage() {
               <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
                 <div className="grid gap-4 sm:grid-cols-1">
                   <div className="flex items-start gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
-                    <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}><FiTicket className="text-base" /></div>
+                    <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}><FiTag className="text-base" /></div>
                     <div>
                       <h3 className="text-base font-semibold text-white">Acceso a la mano</h3>
                       <p className="mt-2 text-sm leading-relaxed text-zinc-300">Tus boletos quedan listos para abrirse rápido cuando llegue el momento.</p>
@@ -120,23 +119,6 @@ export default function CheckoutSuccessPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
-                    <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}><FiShield className="text-base" /></div>
-                    <div>
-                      <h3 className="text-base font-semibold text-white">Pago confirmado</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-zinc-300">El flujo ya cerró bien y deja claro que el usuario no se quedó en un limbo después de pagar.</p>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
-                <div className="flex items-start gap-4">
-                  <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}><FiMapPin className="text-base" /></div>
-                  <div>
-                    <h3 className="text-base font-semibold text-white">Venue confirmado</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">Supra Roma · CDMX. Mantener el evento visible ayuda a reforzar qué se compró y para cuándo.</p>
-                  </div>
                 </div>
               </section>
             </aside>
