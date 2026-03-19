@@ -56,15 +56,14 @@ export default function CheckoutPage() {
 
   const handleVerifyCode = () => {
     setCheckoutLoaderVisible(true);
+    setOtpStep("closed");
+    setOtpValue("");
 
     window.setTimeout(() => {
       if (typeof window !== "undefined") {
         window.history.replaceState(null, "", "/events");
       }
 
-      setCheckoutLoaderVisible(false);
-      setOtpStep("closed");
-      setOtpValue("");
       router.push("/checkout/success");
     }, 2400);
   };
