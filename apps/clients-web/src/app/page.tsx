@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
 import Link from "next/link";
-import { FiArrowRight, FiCheck, FiClock, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiX } from "react-icons/fi";
+import { useAuth } from "@/components/auth-provider";
+import { FiArrowRight, FiCheck, FiClock, FiLogOut, FiMapPin, FiMenu, FiPlay, FiShield, FiStar, FiRepeat, FiUser, FiX } from "react-icons/fi";
 
 const navLinks = [
   { label: "Inicio", href: "#hero-vnext" },
@@ -78,6 +79,13 @@ const howItWorks = [
 
 export default function Page() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { appUser, logout, loadingState } = useAuth();
+  const hasSession = Boolean(appUser);
+
+  const handleLogout = async () => {
+    await logout();
+    setMobileMenuOpen(false);
+  };
 
   return (
     <main className="min-h-screen bg-[#020308] text-white">
@@ -121,20 +129,43 @@ export default function Page() {
             </nav>
 
             <div className="ml-auto hidden items-center md:flex">
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                style={{ background: colors.accent }}
-              >
-                Crear cuenta
-                <FiArrowRight className="text-sm" />
-              </Link>
-              <Link
-                href="/login"
-                className="ml-4 text-sm font-medium tracking-[0.01em] text-zinc-300 transition hover:text-white"
-              >
-                Iniciar sesión
-              </Link>
+              {hasSession ? (
+                <>
+                  <Link
+                    href="#hero-vnext"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Ver mi perfil
+                    <FiUser className="text-sm" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={loadingState === "logout"}
+                    className="ml-4 text-sm font-medium tracking-[0.01em] text-zinc-300 transition hover:text-white disabled:opacity-50"
+                  >
+                    {loadingState === "logout" ? "Cerrando..." : "Cerrar sesión"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/signup"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Crear cuenta
+                    <FiArrowRight className="text-sm" />
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="ml-4 text-sm font-medium tracking-[0.01em] text-zinc-300 transition hover:text-white"
+                  >
+                    Iniciar sesión
+                  </Link>
+                </>
+              )}
             </div>
 
             <button
@@ -184,15 +215,28 @@ export default function Page() {
             </nav>
 
             <div className="border-t border-white/10 pt-6">
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
-                style={{ color: colors.accent }}
-              >
-                Iniciar sesión
-                <FiArrowRight className="text-sm" />
-              </Link>
+              {hasSession ? (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={loadingState === "logout"}
+                  className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85 disabled:opacity-50"
+                  style={{ color: colors.accent }}
+                >
+                  {loadingState === "logout" ? "Cerrando sesión..." : "Cerrar sesión"}
+                  <FiLogOut className="text-sm" />
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
+                  style={{ color: colors.accent }}
+                >
+                  Iniciar sesión
+                  <FiArrowRight className="text-sm" />
+                </Link>
+              )}
             </div>
           </aside>
         </div>
@@ -231,14 +275,25 @@ export default function Page() {
               </ul>
 
               <div className="flex flex-wrap items-center gap-3">
-                <Link
-                  href="/signup"
-                  className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                  style={{ background: colors.accent }}
-                >
-                  Crear cuenta
-                  <FiArrowRight className="text-sm" />
-                </Link>
+                {hasSession ? (
+                  <Link
+                    href="#hero-vnext"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Ver mi perfil
+                    <FiUser className="text-sm" />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/signup"
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                    style={{ background: colors.accent }}
+                  >
+                    Crear cuenta
+                    <FiArrowRight className="text-sm" />
+                  </Link>
+                )}
                 <Link
                   href="/events"
                   className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
@@ -399,14 +454,25 @@ export default function Page() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <Link
-                    href="/signup"
-                    className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                    style={{ background: colors.accent }}
-                  >
-                    Crear cuenta
-                    <FiArrowRight className="text-sm" />
-                  </Link>
+                  {hasSession ? (
+                    <Link
+                      href="#hero-vnext"
+                      className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                      style={{ background: colors.accent }}
+                    >
+                      Ver mi perfil
+                      <FiUser className="text-sm" />
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/signup"
+                      className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
+                      style={{ background: colors.accent }}
+                    >
+                      Crear cuenta
+                      <FiArrowRight className="text-sm" />
+                    </Link>
+                  )}
                   <Link
                     href="/events"
                     className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-[0.82rem] font-medium tracking-[0.01em] text-zinc-200 transition hover:border-white/30 hover:text-white"
@@ -461,15 +527,28 @@ export default function Page() {
                 <div className="space-y-3">
                   <p className="text-[0.8rem] font-semibold tracking-[0.08em] text-white">Cuenta</p>
                   <div className="flex flex-col gap-2 text-sm text-zinc-400">
-                    <Link href="/signup" className="transition hover:text-white">
-                      Crear cuenta
-                    </Link>
-                    <Link href="/events" className="transition hover:text-white">
-                      Explorar eventos
-                    </Link>
-                    <Link href="/events" className="transition hover:text-white">
-                      Buscar más
-                    </Link>
+                    {hasSession ? (
+                      <>
+                        <Link href="#hero-vnext" className="transition hover:text-white">
+                          Ver mi perfil
+                        </Link>
+                        <button type="button" onClick={handleLogout} className="text-left transition hover:text-white">
+                          Cerrar sesión
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/signup" className="transition hover:text-white">
+                          Crear cuenta
+                        </Link>
+                        <Link href="/events" className="transition hover:text-white">
+                          Explorar eventos
+                        </Link>
+                        <Link href="/events" className="transition hover:text-white">
+                          Buscar más
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
 
