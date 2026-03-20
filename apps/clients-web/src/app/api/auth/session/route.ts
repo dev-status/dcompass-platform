@@ -20,6 +20,7 @@ const postRequestSchema = z.object({
 function buildFullName(input: {
   fullName?: string;
   decodedName?: string;
+  existingFullName?: string | null;
   email?: string;
 }) {
   if (input.fullName?.trim()) {
@@ -28,6 +29,10 @@ function buildFullName(input: {
 
   if (input.decodedName?.trim()) {
     return input.decodedName.trim();
+  }
+
+  if (input.existingFullName?.trim()) {
+    return input.existingFullName.trim();
   }
 
   if (input.email?.trim()) {
@@ -77,6 +82,11 @@ export const POST = createRouteHandler({
       throw new HttpError(400, "Token de Firebase incompleto.");
     }
 
+    const existingUser = await getAuthenticatedUser({
+      firebaseUid: decodedToken.uid,
+      email: decodedToken.email
+    });
+
     const user = await syncFirebaseUser({
       firebaseUid: decodedToken.uid,
       email: decodedToken.email,
@@ -84,10 +94,11 @@ export const POST = createRouteHandler({
       fullName: buildFullName({
         fullName: body.fullName,
         decodedName: decodedToken.name,
+        existingFullName: existingUser?.fullName,
         email: decodedToken.email
       }),
-      phone: decodedToken.phone_number ?? null,
-      avatarUrl: decodedToken.picture ?? null
+      phone: decodedToken.phone_number ?? existingUser?.phone ?? null,
+      avatarUrl: decodedToken.picture ?? existingUser?.avatarUrl ?? null
     });
 
     return {
