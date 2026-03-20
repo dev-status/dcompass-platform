@@ -7,6 +7,12 @@ interface CreateAuthSessionInput {
   fullName?: string;
 }
 
+interface UpdateProfileInput {
+  idToken: string;
+  fullName?: string;
+  avatarUrl?: string | null;
+}
+
 export class AuthSessionNotFoundError extends Error {
   constructor(message = "La sesión autenticada aún no existe en backend.") {
     super(message);
@@ -43,6 +49,27 @@ export async function getCurrentAuthSession(idToken: string): Promise<SessionRes
       }
 
       throw new Error(error.response?.data?.error ?? "No se pudo obtener la sesión actual.");
+    }
+
+    throw error;
+  }
+}
+
+export async function updateProfile(input: UpdateProfileInput): Promise<SessionResponse> {
+  try {
+    const response = await http.put<SessionResponse>("/profile", {
+      fullName: input.fullName,
+      avatarUrl: input.avatarUrl
+    }, {
+      headers: {
+        Authorization: `Bearer ${input.idToken}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError<{ error?: string }>(error)) {
+      throw new Error(error.response?.data?.error ?? "No se pudo actualizar tu perfil.");
     }
 
     throw error;

@@ -132,11 +132,11 @@ export default function Page() {
               {hasSession ? (
                 <>
                   <Link
-                    href="#hero-vnext"
+                    href="/profile"
                     className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                     style={{ background: colors.accent }}
                   >
-                    Ver mi perfil
+                    Mi perfil
                     <FiUser className="text-sm" />
                   </Link>
                   <button
@@ -216,16 +216,26 @@ export default function Page() {
 
             <div className="border-t border-white/10 pt-6">
               {hasSession ? (
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  disabled={loadingState === "logout"}
-                  className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85 disabled:opacity-50"
-                  style={{ color: colors.accent }}
-                >
-                  {loadingState === "logout" ? "Cerrando sesión..." : "Cerrar sesión"}
-                  <FiLogOut className="text-sm" />
-                </button>
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-flex items-center justify-between text-[0.92rem] font-semibold tracking-[0.01em] transition hover:text-white/85"
+                    style={{ color: colors.accent }}
+                  >
+                    Mi perfil
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={loadingState === "logout"}
+                    className="inline-flex items-center gap-2 text-[0.82rem] font-semibold tracking-[0.01em] transition hover:text-white/85 disabled:opacity-50"
+                    style={{ color: colors.accent }}
+                  >
+                    {loadingState === "logout" ? "Cerrando sesión..." : "Cerrar sesión"}
+                    <FiLogOut className="text-sm" />
+                  </button>
+                </div>
               ) : (
                 <Link
                   href="/login"
@@ -277,7 +287,7 @@ export default function Page() {
               <div className="flex flex-wrap items-center gap-3">
                 {hasSession ? (
                   <Link
-                    href="#hero-vnext"
+                    href="/profile"
                     className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                     style={{ background: colors.accent }}
                   >
@@ -456,7 +466,7 @@ export default function Page() {
                 <div className="flex flex-wrap items-center gap-3">
                   {hasSession ? (
                     <Link
-                      href="#hero-vnext"
+                      href="/profile"
                       className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[0.82rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
                       style={{ background: colors.accent }}
                     >
@@ -529,7 +539,7 @@ export default function Page() {
                   <div className="flex flex-col gap-2 text-sm text-zinc-400">
                     {hasSession ? (
                       <>
-                        <Link href="#hero-vnext" className="transition hover:text-white">
+                        <Link href="/profile" className="transition hover:text-white">
                           Ver mi perfil
                         </Link>
                         <button type="button" onClick={handleLogout} className="text-left transition hover:text-white">
