@@ -7,6 +7,13 @@ interface CreateAuthSessionInput {
   fullName?: string;
 }
 
+export class AuthSessionNotFoundError extends Error {
+  constructor(message = "La sesión autenticada aún no existe en backend.") {
+    super(message);
+    this.name = "AuthSessionNotFoundError";
+  }
+}
+
 export async function createAuthSession(input: CreateAuthSessionInput): Promise<SessionResponse> {
   try {
     const response = await http.post<SessionResponse>("/auth/session", input);
@@ -31,6 +38,10 @@ export async function getCurrentAuthSession(idToken: string): Promise<SessionRes
     return response.data;
   } catch (error) {
     if (axios.isAxiosError<{ error?: string }>(error)) {
+      if (error.response?.status === 404) {
+        throw new AuthSessionNotFoundError();
+      }
+
       throw new Error(error.response?.data?.error ?? "No se pudo obtener la sesión actual.");
     }
 

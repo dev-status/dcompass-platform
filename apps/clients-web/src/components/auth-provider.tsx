@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { User as FirebaseUser } from "firebase/auth";
 import { getCurrentSessionFromFirebaseUserIdToken, loginAndSync, logout, signUpAndSync, watchFirebaseAuthState } from "@/lib/auth";
+import { AuthSessionNotFoundError } from "@/lib/auth-api";
 
 export interface AppUser {
   id: string;
@@ -46,12 +47,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingState, setLoadingState] = useState<AuthLoadingState>("restoring");
+  const authBootstrapInFlightRef = useRef(false);
 
   useEffect(() => {
     const unsubscribe = watchFirebaseAuthState(async (nextFirebaseUser) => {
+      setFirebaseUser(nextFirebaseUser);
+
+      if (authBootstrapInFlightRef.current) {
+        return;
+      }
+
       setLoading(true);
       setLoadingState("restoring");
-      setFirebaseUser(nextFirebaseUser);
 
       if (!nextFirebaseUser) {
         setAppUser(null);
@@ -65,7 +72,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await getCurrentSessionFromFirebaseUserIdToken(idToken);
         setAppUser(session.user);
       } catch (error) {
-        console.error("Failed to restore auth session", error);
+        if (error instanceof AuthSessionNotFoundError) {
+          setAppUser(null);
+        } else {
+          console.error("Failed to restore auth session", error);
+        }
       } finally {
         setLoading(false);
         setLoadingState("idle");
@@ -82,23 +93,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       loadingState,
       login: async (input) => {
+        authBootstrapInFlightRef.current = true;
         setLoading(true);
         setLoadingState("login");
         try {
           const session = await loginAndSync(input);
           setAppUser(session.user);
         } finally {
+          authBootstrapInFlightRef.current = false;
           setLoading(false);
           setLoadingState("idle");
         }
       },
       signup: async (input) => {
+        authBootstrapInFlightRef.current = true;
         setLoading(true);
         setLoadingState("signup");
         try {
           const session = await signUpAndSync(input);
           setAppUser(session.user);
         } finally {
+          authBootstrapInFlightRef.current = false;
           setLoading(false);
           setLoadingState("idle");
         }
