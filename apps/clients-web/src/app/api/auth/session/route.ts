@@ -27,12 +27,12 @@ function buildFullName(input: {
     return input.fullName.trim();
   }
 
-  if (input.decodedName?.trim()) {
-    return input.decodedName.trim();
-  }
-
   if (input.existingFullName?.trim()) {
     return input.existingFullName.trim();
+  }
+
+  if (input.decodedName?.trim()) {
+    return input.decodedName.trim();
   }
 
   if (input.email?.trim()) {
@@ -98,7 +98,7 @@ export const POST = createRouteHandler({
         email: decodedToken.email
       }),
       phone: decodedToken.phone_number ?? existingUser?.phone ?? null,
-      avatarUrl: decodedToken.picture ?? existingUser?.avatarUrl ?? null
+      avatarUrl: existingUser?.avatarUrl ?? decodedToken.picture ?? null
     });
 
     return {
