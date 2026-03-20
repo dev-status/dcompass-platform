@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { verifyFirebaseIdToken, type FirebaseAdminEnv } from "@dcompass/auth/server";
 import { syncFirebaseUser } from "@dcompass/db";
 
@@ -9,6 +10,20 @@ const firebaseAdminEnv: Partial<FirebaseAdminEnv> = {
   FIREBASE_ADMIN_CLIENT_EMAIL: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
   FIREBASE_ADMIN_PRIVATE_KEY: process.env.FIREBASE_ADMIN_PRIVATE_KEY
 };
+
+const requestSchema = z.object({
+  idToken: z.string().min(1)
+});
+
+const SESSION_RATE_LIMIT_WINDOW_MS = 60_000;
+const SESSION_RATE_LIMIT_MAX_REQUESTS = 20;
+
+const globalForRateLimit = globalThis as typeof globalThis & {
+  dcompassAuthSessionRateLimit?: Map<string, number[]>;
+};
+
+const rateLimitStore = globalForRateLimit.dcompassAuthSessionRateLimit ?? new Map<string, number[]>();
+globalForRateLimit.dcompassAuthSessionRateLimit = rateLimitStore;
 
 function buildFullName(decodedToken: {
   name?: string;
@@ -25,15 +40,62 @@ function buildFullName(decodedToken: {
   return "Usuario DCompass";
 }
 
+function getClientKey(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() ?? "unknown";
+  }
+
+  return request.headers.get("x-real-ip") ?? "unknown";
+}
+
+function isRateLimited(clientKey: string) {
+  const now = Date.now();
+  const currentWindow = (rateLimitStore.get(clientKey) ?? []).filter(
+    (timestamp) => now - timestamp < SESSION_RATE_LIMIT_WINDOW_MS
+  );
+
+  if (currentWindow.length >= SESSION_RATE_LIMIT_MAX_REQUESTS) {
+    rateLimitStore.set(clientKey, currentWindow);
+    return true;
+  }
+
+  currentWindow.push(now);
+  rateLimitStore.set(clientKey, currentWindow);
+  return false;
+}
+
+function isSupportedContentType(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  return contentType.toLowerCase().includes("application/json");
+}
+
+function isAllowedRequestedWith(request: Request) {
+  const requestedWith = request.headers.get("x-requested-with");
+  return requestedWith === null || requestedWith === "XMLHttpRequest";
+}
+
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { idToken?: string };
-
-    if (!body.idToken) {
-      return NextResponse.json({ error: "Falta el idToken." }, { status: 400 });
+    if (!isSupportedContentType(request)) {
+      return NextResponse.json({ error: "Content-Type inválido." }, { status: 415 });
     }
 
-    const decodedToken = await verifyFirebaseIdToken(firebaseAdminEnv, body.idToken);
+    if (!isAllowedRequestedWith(request)) {
+      return NextResponse.json({ error: "Encabezado de solicitud inválido." }, { status: 400 });
+    }
+
+    const clientKey = getClientKey(request);
+    if (isRateLimited(clientKey)) {
+      return NextResponse.json({ error: "Demasiadas solicitudes. Intenta de nuevo en un momento." }, { status: 429 });
+    }
+
+    const parsed = requestSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Body inválido." }, { status: 400 });
+    }
+
+    const decodedToken = await verifyFirebaseIdToken(firebaseAdminEnv, parsed.data.idToken);
 
     if (!decodedToken.uid || !decodedToken.email) {
       return NextResponse.json({ error: "Token de Firebase incompleto." }, { status: 400 });
