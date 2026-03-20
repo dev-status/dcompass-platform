@@ -1,22 +1,28 @@
-export type DbClient = {
-  query: (statement: string) => Promise<unknown>;
-  close: () => Promise<void>;
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient;
 };
 
-export function createDbClient(): DbClient {
-  return {
-    query: async (statement: string) => {
-      console.warn(
-        "[dcompass/db] Prisma client not yet initialized. Queryed", statement,
-        "(placeholder result)"
-      );
-      return [];
-    },
-    close: async () => {
-      console.warn("[dcompass/db] closing placeholder client");
-    }
-  };
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"]
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
 }
 
-export const DB_PLACEHOLDER_NOTE =
-  "Switch this file to import PrismaClient from @prisma/client and run `pnpm db:generate` once the schema is stabilized.";
+export type DbClient = PrismaClient;
+
+export * from "./users";
+
+export async function checkDbConnection() {
+  await prisma.$queryRaw`SELECT 1`;
+  return { ok: true };
+}
+
+export async function closeDbConnection() {
+  await prisma.$disconnect();
+}
