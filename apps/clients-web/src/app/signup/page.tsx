@@ -111,7 +111,7 @@ export default function Page() {
                 <div className="space-y-3">
                   <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
                     <FiArrowLeft className="text-sm" />
-                    Volver al inicio
+                    Volver
                   </Link>
                   <div className="space-y-2">
                     <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Crea tu cuenta</h1>
@@ -282,17 +282,13 @@ export default function Page() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 border-t border-white/10 pt-5 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="border-t border-white/10 pt-5 text-sm text-zinc-400">
                       <p>
                         ¿Ya tienes acceso?{" "}
                         <Link href="/login" className="font-medium transition hover:text-white" style={{ color: colors.accent }}>
                           Inicia sesión
                         </Link>
                       </p>
-                      <Link href="/" className="inline-flex items-center gap-2 transition hover:text-white">
-                        <FiArrowLeft className="text-sm" />
-                        Volver al inicio
-                      </Link>
                     </div>
                   </div>
                 </div>
