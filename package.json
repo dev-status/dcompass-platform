@@ -9,7 +9,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "db:generate": "pnpm --filter @dcompass/db exec prisma generate"
+    "db:generate": "prisma generate --schema prisma/schema.prisma"
   },
   "workspaces": [
     "apps/*",
