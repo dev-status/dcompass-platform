@@ -27,10 +27,13 @@ interface SignupInput extends LoginInput {
   fullName: string;
 }
 
+export type AuthLoadingState = "idle" | "restoring" | "login" | "signup" | "logout";
+
 interface AuthContextValue {
   firebaseUser: FirebaseUser | null;
   appUser: AppUser | null;
   loading: boolean;
+  loadingState: AuthLoadingState;
   login: (input: LoginInput) => Promise<void>;
   signup: (input: SignupInput) => Promise<void>;
   logout: () => Promise<void>;
@@ -42,14 +45,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingState, setLoadingState] = useState<AuthLoadingState>("restoring");
 
   useEffect(() => {
     const unsubscribe = watchFirebaseAuthState(async (nextFirebaseUser) => {
+      setLoading(true);
+      setLoadingState("restoring");
       setFirebaseUser(nextFirebaseUser);
 
       if (!nextFirebaseUser) {
         setAppUser(null);
         setLoading(false);
+        setLoadingState("idle");
         return;
       }
 
@@ -61,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to restore auth session", error);
       } finally {
         setLoading(false);
+        setLoadingState("idle");
       }
     });
 
@@ -72,36 +80,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       firebaseUser,
       appUser,
       loading,
+      loadingState,
       login: async (input) => {
         setLoading(true);
+        setLoadingState("login");
         try {
           const session = await loginAndSync(input);
           setAppUser(session.user);
         } finally {
           setLoading(false);
+          setLoadingState("idle");
         }
       },
       signup: async (input) => {
         setLoading(true);
+        setLoadingState("signup");
         try {
           const session = await signUpAndSync(input);
           setAppUser(session.user);
         } finally {
           setLoading(false);
+          setLoadingState("idle");
         }
       },
       logout: async () => {
         setLoading(true);
+        setLoadingState("logout");
         try {
           await logout();
           setFirebaseUser(null);
           setAppUser(null);
         } finally {
           setLoading(false);
+          setLoadingState("idle");
         }
       }
     }),
-    [appUser, firebaseUser, loading]
+    [appUser, firebaseUser, loading, loadingState]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
