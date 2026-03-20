@@ -10,6 +10,11 @@ export interface SyncFirebaseUserInput {
   avatarUrl?: string | null;
 }
 
+export interface UpdateUserProfileInput {
+  fullName?: string;
+  avatarUrl?: string | null;
+}
+
 export async function syncFirebaseUser(input: SyncFirebaseUserInput): Promise<User> {
   const normalizedEmail = input.email.trim().toLowerCase();
 
@@ -66,6 +71,26 @@ export async function getAuthenticatedUser(params: {
   }
 
   return null;
+}
+
+export async function updateUserProfileByFirebaseUid(
+  firebaseUid: string,
+  input: UpdateUserProfileInput
+): Promise<User> {
+  const data: Prisma.UserUpdateInput = {};
+
+  if (typeof input.fullName === "string") {
+    data.fullName = input.fullName.trim();
+  }
+
+  if (typeof input.avatarUrl !== "undefined") {
+    data.avatarUrl = input.avatarUrl;
+  }
+
+  return prisma.user.update({
+    where: { firebaseUid },
+    data
+  });
 }
 
 export async function listUsers(args?: Prisma.UserFindManyArgs): Promise<User[]> {

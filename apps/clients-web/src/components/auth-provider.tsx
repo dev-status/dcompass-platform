@@ -38,13 +38,14 @@ interface AuthContextValue {
   login: (input: LoginInput) => Promise<void>;
   signup: (input: SignupInput) => Promise<void>;
   logout: () => Promise<void>;
+  setAppUser: (user: AppUser | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const [appUser, setAppUser] = useState<AppUser | null>(null);
+  const [appUser, internalSetAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingState, setLoadingState] = useState<AuthLoadingState>("restoring");
   const authBootstrapInFlightRef = useRef(false);
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoadingState("restoring");
 
       if (!nextFirebaseUser) {
-        setAppUser(null);
+        internalSetAppUser(null);
         setLoading(false);
         setLoadingState("idle");
         return;
@@ -70,10 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const idToken = await nextFirebaseUser.getIdToken();
         const session = await getCurrentSessionFromFirebaseUserIdToken(idToken);
-        setAppUser(session.user);
+        internalSetAppUser(session.user);
       } catch (error) {
         if (error instanceof AuthSessionNotFoundError) {
-          setAppUser(null);
+          internalSetAppUser(null);
         } else {
           console.error("Failed to restore auth session", error);
         }
@@ -98,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoadingState("login");
         try {
           const session = await loginAndSync(input);
-          setAppUser(session.user);
+          internalSetAppUser(session.user);
         } finally {
           authBootstrapInFlightRef.current = false;
           setLoading(false);
@@ -111,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoadingState("signup");
         try {
           const session = await signUpAndSync(input);
-          setAppUser(session.user);
+          internalSetAppUser(session.user);
         } finally {
           authBootstrapInFlightRef.current = false;
           setLoading(false);
@@ -124,11 +125,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           await logout();
           setFirebaseUser(null);
-          setAppUser(null);
+          internalSetAppUser(null);
         } finally {
           setLoading(false);
           setLoadingState("idle");
         }
+      },
+      setAppUser: (user) => {
+        internalSetAppUser(user);
       }
     }),
     [appUser, firebaseUser, loading, loadingState]

@@ -3,64 +3,93 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { FiCamera, FiCheckCircle, FiEdit3, FiInfo, FiLogOut, FiX } from "react-icons/fi";
+import { colors } from "@dcompass/ui";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmailVerification } from "firebase/auth";
+import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiEdit3, FiX } from "react-icons/fi";
+import { firebaseStorage } from "@/lib/firebase/client";
+import { updateProfile } from "@/lib/auth-api";
 import { useAuth } from "@/components/auth-provider";
 
 const memberSinceFormatter = new Intl.DateTimeFormat("es-MX", {
-  day: "numeric",
   month: "long",
   year: "numeric"
 });
 
 type VerifyStatus = "idle" | "sending" | "sent" | "error";
+type SaveNameStatus = "idle" | "saving" | "error";
+type SavePhotoStatus = "idle" | "saving" | "error";
 
 function formatMemberSince(value?: string) {
-  if (!value) {
-    return null;
-  }
-
+  if (!value) return null;
   const parsed = new Date(value);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return null;
-  }
-
+  if (Number.isNaN(parsed.getTime())) return null;
   return memberSinceFormatter.format(parsed);
 }
 
 function getInitials(fullName?: string) {
-  if (!fullName) {
-    return "DC";
-  }
+  if (!fullName) return "DC";
+  const parts = fullName.trim().split(/\s+/).filter(Boolean).slice(0, 2);
+  if (!parts.length) return "DC";
+  return parts.map((part) => part[0]?.toUpperCase()).join("");
+}
 
-  const parts = fullName
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2);
+function FloatingEditButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute -right-1.5 -top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-[#11131d] text-zinc-200 shadow-[0_18px_45px_rgba(0,0,0,0.35)] transition hover:border-white/25 hover:text-white"
+      aria-label={label}
+    >
+      <FiEdit3 className="text-[11px]" />
+    </button>
+  );
+}
 
-  if (!parts.length) {
-    return "DC";
-  }
+function GenericAvatar({ name }: { name: string }) {
+  const initials = getInitials(name);
 
-  return parts.map((part) => part[0].toUpperCase()).join("");
+  return (
+    <div className="flex h-24 w-24 items-center justify-center rounded-[1.75rem] border border-white/10 bg-white/[0.05] text-2xl font-semibold text-white shadow-[0_18px_45px_rgba(130,89,208,0.25)]">
+      {initials}
+    </div>
+  );
+}
+
+function ModalFrame({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center px-5 pt-[10vh] sm:pt-[12vh]">
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />
+      <div className="relative w-full max-w-md rounded-[1.8rem] border border-white/10 bg-[#04060c]/95 p-6 shadow-[0_25px_90px_rgba(0,0,0,0.76)]">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <button type="button" onClick={onClose} aria-label="Cerrar modal" className="text-zinc-400 transition hover:text-white">
+            <FiX />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
 }
 
 export default function ProfilePage() {
-  const { appUser, firebaseUser, loading, logout, loadingState } = useAuth();
+  const { appUser, firebaseUser, loading, logout, loadingState, setAppUser } = useAuth();
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState<{ url: string; name: string } | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<{ file: File; url: string; name: string } | null>(null);
+  const [photoStatus, setPhotoStatus] = useState<SavePhotoStatus>("idle");
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
-  const [nameFeedback, setNameFeedback] = useState<string | null>(null);
+  const [nameStatus, setNameStatus] = useState<SaveNameStatus>("idle");
+  const [nameError, setNameError] = useState<string | null>(null);
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState<VerifyStatus>("idle");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const previewUrl = selectedPhoto?.url;
-
     return () => {
       if (previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
@@ -71,21 +100,19 @@ export default function ProfilePage() {
   const initials = useMemo(() => getInitials(appUser?.fullName), [appUser?.fullName]);
   const memberSince = useMemo(() => formatMemberSince(appUser?.createdAt), [appUser?.createdAt]);
   const originalName = appUser?.fullName ?? "";
-  const nameHasChanges = Boolean(appUser) && nameInput.trim().length > 0 && nameInput.trim() !== originalName.trim();
-  const canSaveName = nameHasChanges && nameInput.trim().length >= 3;
+  const normalizedName = nameInput.trim();
+  const nameHasChanges = Boolean(appUser) && normalizedName.length > 0 && normalizedName !== originalName.trim();
+  const canSaveName = nameHasChanges && normalizedName.length >= 2 && nameStatus !== "saving";
 
-  const handlePhotoClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handlePhotoClick = () => fileInputRef.current?.click();
 
   const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
+    if (!file) return;
     const url = URL.createObjectURL(file);
-    setSelectedPhoto({ url, name: file.name });
+    setSelectedPhoto({ file, url, name: file.name });
+    setPhotoError(null);
+    setPhotoStatus("idle");
     setPhotoModalOpen(true);
     event.target.value = "";
   };
@@ -93,21 +120,62 @@ export default function ProfilePage() {
   const closePhotoModal = () => {
     setPhotoModalOpen(false);
     setSelectedPhoto(null);
+    setPhotoError(null);
+    setPhotoStatus("idle");
   };
 
   const openNameModal = () => {
     setNameInput(originalName);
-    setNameFeedback(null);
+    setNameError(null);
+    setNameStatus("idle");
     setNameModalOpen(true);
   };
 
   const closeNameModal = () => {
     setNameModalOpen(false);
-    setNameFeedback(null);
+    setNameError(null);
+    setNameStatus("idle");
   };
 
-  const handleNameSave = () => {
-    setNameFeedback("La actualización real del nombre aún no está conectada con el backend.");
+  const handleNameSave = async () => {
+    if (!appUser || !firebaseUser || !canSaveName) return;
+
+    setNameStatus("saving");
+    setNameError(null);
+
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const session = await updateProfile({ idToken, fullName: normalizedName });
+      setAppUser(session.user);
+      setNameModalOpen(false);
+    } catch (error) {
+      setNameError(error instanceof Error ? error.message : "No se pudo actualizar tu nombre.");
+      setNameStatus("error");
+      return;
+    }
+
+    setNameStatus("idle");
+  };
+
+  const handleSavePhoto = async () => {
+    if (!appUser || !firebaseUser || !selectedPhoto) return;
+
+    setPhotoStatus("saving");
+    setPhotoError(null);
+
+    try {
+      const extension = selectedPhoto.file.name.split(".").pop() || "jpg";
+      const storageRef = ref(firebaseStorage, `users/${appUser.firebaseUid ?? appUser.id}/avatar.${extension}`);
+      await uploadBytes(storageRef, selectedPhoto.file, { contentType: selectedPhoto.file.type });
+      const avatarUrl = await getDownloadURL(storageRef);
+      const idToken = await firebaseUser.getIdToken();
+      const session = await updateProfile({ idToken, avatarUrl });
+      setAppUser(session.user);
+      closePhotoModal();
+    } catch (error) {
+      setPhotoError(error instanceof Error ? error.message : "No se pudo actualizar tu foto.");
+      setPhotoStatus("error");
+    }
   };
 
   const openVerifyModal = () => {
@@ -123,29 +191,18 @@ export default function ProfilePage() {
   };
 
   const handleSendVerification = async () => {
-    if (!firebaseUser) {
-      return;
-    }
-
+    if (!firebaseUser) return;
     setVerifyStatus("sending");
-
     try {
       await sendEmailVerification(firebaseUser);
       setVerifyStatus("sent");
-    } catch (error) {
-      console.error("Failed to send verification email", error);
+    } catch {
       setVerifyStatus("error");
     }
   };
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-[#010207] text-white">
-        <div className="grid min-h-screen place-items-center px-5">
-          <p className="text-sm text-zinc-400">Cargando tu sesión...</p>
-        </div>
-      </main>
-    );
+    return <main className="min-h-screen bg-[#010207] text-white"><div className="grid min-h-screen place-items-center px-5"><p className="text-sm text-zinc-400">Cargando tu sesión...</p></div></main>;
   }
 
   if (!appUser) {
@@ -154,22 +211,10 @@ export default function ProfilePage() {
         <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 px-5 py-20 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">Mi perfil</p>
           <h1 className="text-3xl font-semibold text-white">Necesitas iniciar sesión</h1>
-          <p className="max-w-2xl text-sm text-zinc-400">
-            Para ver tu perfil, tus datos y tus interacciones con DCompass debes iniciar sesión con tu cuenta.
-          </p>
+          <p className="max-w-2xl text-sm text-zinc-400">Para ver tu perfil, tus datos y tus interacciones con DCompass debes iniciar sesión con tu cuenta.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40"
-            >
-              Crear cuenta
-            </Link>
+            <Link href="/login" className="rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40">Iniciar sesión</Link>
+            <Link href="/signup" className="rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40">Crear cuenta</Link>
           </div>
         </div>
       </main>
@@ -182,246 +227,123 @@ export default function ProfilePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_42%)] blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(130,89,208,0.25),_transparent_60%)]" />
       </div>
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 py-10 lg:px-10">
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm uppercase tracking-[0.3em] text-zinc-400">
-          <span>Mi perfil</span>
-          <div className="flex flex-wrap items-center gap-3 text-[0.72rem] tracking-[0.3em] text-zinc-500">
-            <Link href="/" className="transition hover:text-white">
-              Inicio
-            </Link>
-            <Link href="/events" className="transition hover:text-white">
-              Eventos
-            </Link>
+      <div className="relative mx-auto flex w-full max-w-[880px] flex-col gap-8 px-5 py-10 lg:px-10">
+        <div className="space-y-3">
+          <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-zinc-400 transition hover:text-white">
+            <FiArrowRight className="rotate-180 text-sm" /> Volver
+          </Link>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Mi perfil</h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">Revisa la información principal de tu cuenta y completa lo necesario para dejarla al día.</p>
           </div>
         </div>
 
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_25px_90px_rgba(0,0,0,0.6)]">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center">
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-gradient-to-b from-white/10 to-white/[0.02] text-4xl font-semibold text-white">
-                  {appUser.avatarUrl ? (
-                    <Image src={appUser.avatarUrl} alt="Avatar" width={112} height={112} className="h-full w-full object-cover" unoptimized />
-                  ) : (
-                    <span>{initials}</span>
-                  )}
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+
+        <section className="space-y-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+            <div className="relative w-fit">
+              {appUser.avatarUrl ? (
+                <div className="relative h-24 w-24 overflow-hidden rounded-[1.75rem] border border-white/10">
+                  <Image src={appUser.avatarUrl} alt={appUser.fullName} fill className="object-cover" unoptimized />
                 </div>
-                <button
-                  type="button"
-                  onClick={handlePhotoClick}
-                  className="absolute bottom-0 right-0 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/60 text-sm transition hover:bg-white/10"
-                  aria-label="Editar foto de perfil"
-                >
-                  <FiCamera className="text-lg text-white" />
-                </button>
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-              </div>
-              <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-3xl font-semibold text-white">{appUser.fullName}</h1>
-                  <button
-                    type="button"
-                    onClick={openNameModal}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm transition hover:border-white/40"
-                    aria-label="Editar nombre"
-                  >
-                    <FiEdit3 className="text-lg text-white" />
-                  </button>
-                </div>
-                <p className="text-sm text-zinc-300">{appUser.email}</p>
-                {memberSince && (
-                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">Miembro desde {memberSince}</p>
-                )}
-              </div>
+              ) : (
+                <GenericAvatar name={appUser.fullName} />
+              )}
+              <FloatingEditButton onClick={handlePhotoClick} label="Editar foto" />
             </div>
+
+            <div className="space-y-3 pt-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="text-2xl font-semibold text-white">{appUser.fullName}</h2>
+                <button type="button" onClick={openNameModal} className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-[#11131d] text-zinc-200 shadow-[0_18px_45px_rgba(0,0,0,0.35)] transition hover:border-white/25 hover:text-white" aria-label="Editar nombre">
+                  <FiEdit3 className="text-[11px]" />
+                </button>
+              </div>
+              <p className="text-sm text-zinc-300">{appUser.email}</p>
+              {memberSince ? <p className="text-sm text-zinc-400">Miembro desde {memberSince}</p> : null}
+            </div>
+
             <button
               type="button"
               onClick={() => void logout()}
               disabled={loadingState === "logout"}
-              className="ml-auto flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50 disabled:opacity-60"
+              className="ml-auto rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50 disabled:opacity-60"
             >
-              <FiLogOut className="text-sm" />
               {loadingState === "logout" ? "Cerrando..." : "Cerrar sesión"}
             </button>
           </div>
 
-          <div className="mt-8 grid gap-5 lg:grid-cols-[1fr]">
-            <article className="rounded-[1.6rem] border border-white/10 bg-[#05060c]/90 p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">Correo electrónico</p>
-                  <p className="mt-1 text-sm text-zinc-200">{appUser.email}</p>
-                </div>
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.3em] ${
-                    appUser.emailVerified
-                      ? "border border-emerald-300/40 bg-emerald-500/10 text-emerald-300"
-                      : "border border-amber-400/40 bg-amber-500/10 text-amber-300"
-                  }`}
-                >
-                  <FiCheckCircle className="text-[0.9rem]" />
-                  {appUser.emailVerified ? "Verificado" : "Sin verificar"}
-                </span>
-              </div>
-              {!appUser.emailVerified && (
-                <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-50 shadow-[0_15px_60px_rgba(237,144,12,0.25)]">
-                  <p className="text-sm text-amber-50/80">
-                    Verificar tu correo desbloquea acceso completo a beneficios y notificaciones importantes.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={openVerifyModal}
-                    className="mt-4 inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/40"
-                  >
-                    Verificar correo
+          {!appUser.emailVerified ? (
+            <div className="max-w-2xl rounded-[1.5rem] border border-amber-400/20 bg-amber-400/10 p-4">
+              <div className="flex items-start gap-3">
+                <FiAlertCircle className="mt-0.5 text-base text-amber-300" />
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-amber-100">Tu correo aún no está verificado.</p>
+                  <p className="text-sm leading-relaxed text-amber-50/85">Verifícalo para darle más seguridad a tu cuenta y dejar este paso completo desde el inicio.</p>
+                  <button type="button" onClick={openVerifyModal} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.8rem] font-semibold text-white shadow-[0_18px_45px_rgba(130,89,208,0.35)] transition hover:brightness-110" style={{ background: colors.accent }}>
+                    Verificar correo <FiArrowRight className="text-sm" />
                   </button>
                 </div>
-              )}
-            </article>
-          </div>
+              </div>
+            </div>
+          ) : null}
         </section>
       </div>
 
-      {photoModalOpen && selectedPhoto && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center">
-          <div className="absolute inset-0 bg-black/70" onClick={closePhotoModal} aria-hidden="true" />
-          <div className="relative mt-16 w-full max-w-md rounded-[1.8rem] border border-white/10 bg-[#04060c]/95 p-6 shadow-[0_25px_90px_rgba(0,0,0,0.76)]">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Guardar foto</h2>
-              <button
-                type="button"
-                onClick={closePhotoModal}
-                aria-label="Cerrar modal"
-                className="text-zinc-400 transition hover:text-white"
-              >
-                <FiX />
-              </button>
-            </div>
-            <div className="mt-4">
-              <div className="h-40 w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                <Image src={selectedPhoto.url} alt="Vista previa foto" width={420} height={260} className="h-full w-full object-cover" unoptimized />
-              </div>
-              <p className="mt-3 text-sm text-zinc-400">Solo se aplica como vista previa. La carga real aún no está disponible.</p>
-            </div>
-            <div className="mt-6 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={closePhotoModal}
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={closePhotoModal}
-                className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110"
-              >
-                Guardar foto
-              </button>
-            </div>
+      {photoModalOpen && selectedPhoto ? (
+        <ModalFrame title="Actualizar foto" onClose={closePhotoModal}>
+          <p className="mt-3 text-sm text-zinc-400">Revisa la imagen seleccionada antes de guardarla en tu perfil.</p>
+          <div className="mt-4 h-40 w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            <Image src={selectedPhoto.url} alt="Vista previa foto" width={420} height={260} className="h-full w-full object-cover" unoptimized />
           </div>
-        </div>
-      )}
-
-      {nameModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center">
-          <div className="absolute inset-0 bg-black/70" onClick={closeNameModal} aria-hidden="true" />
-          <div className="relative mt-16 w-full max-w-md rounded-[1.8rem] border border-white/10 bg-[#04060c]/95 p-6 shadow-[0_25px_90px_rgba(0,0,0,0.76)]">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Editar nombre</h2>
-              <button
-                type="button"
-                onClick={closeNameModal}
-                aria-label="Cerrar modal"
-                className="text-zinc-400 transition hover:text-white"
-              >
-                <FiX />
-              </button>
-            </div>
-            <p className="mt-3 text-sm text-zinc-400">Este nombre se muestra en tu perfil público.</p>
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(event) => setNameInput(event.target.value)}
-              className="mt-4 w-full rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60"
-              minLength={3}
-            />
-            {nameFeedback && (
-              <p className="mt-3 flex items-center gap-2 text-xs text-zinc-400">
-                <FiInfo />
-                {nameFeedback}
-              </p>
-            )}
-            <div className="mt-6 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={closeNameModal}
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleNameSave}
-                disabled={!canSaveName}
-                className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60"
-              >
-                Guardar cambios
-              </button>
-            </div>
+          {photoError ? <p className="mt-3 text-sm text-rose-400">{photoError}</p> : null}
+          <div className="mt-6 flex items-center justify-end gap-3">
+            <button type="button" onClick={closePhotoModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
+            <button type="button" onClick={() => void handleSavePhoto()} disabled={photoStatus === "saving"} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
+              {photoStatus === "saving" ? "Guardando..." : "Guardar foto"}
+            </button>
           </div>
-        </div>
-      )}
+        </ModalFrame>
+      ) : null}
 
-      {verifyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center">
-          <div className="absolute inset-0 bg-black/70" onClick={closeVerifyModal} aria-hidden="true" />
-          <div className="relative mt-16 w-full max-w-md rounded-[1.8rem] border border-white/10 bg-[#04060c]/95 p-6 shadow-[0_25px_90px_rgba(0,0,0,0.76)]">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Verificar correo</h2>
-              <button
-                type="button"
-                onClick={closeVerifyModal}
-                aria-label="Cerrar modal"
-                className="text-zinc-400 transition hover:text-white"
-              >
-                <FiX />
-              </button>
-            </div>
-            <p className="mt-3 text-sm text-zinc-400">
-              Se enviará un correo de verificación a <strong>{appUser.email}</strong>
-            </p>
-            {verifyStatus === "sent" && (
-              <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-emerald-300">
-                <FiCheckCircle />
-                Correo enviado. Revisa tu bandeja.
+      {nameModalOpen ? (
+        <ModalFrame title="Editar nombre" onClose={closeNameModal}>
+          <p className="mt-3 text-sm text-zinc-400">Actualiza el nombre que se mostrará dentro de tu cuenta.</p>
+          <input type="text" value={nameInput} onChange={(event) => setNameInput(event.target.value)} className="mt-4 w-full rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60" minLength={2} autoFocus />
+          {nameError ? <p className="mt-3 text-sm text-rose-400">{nameError}</p> : null}
+          <div className="mt-6 flex items-center justify-end gap-3">
+            <button type="button" onClick={closeNameModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
+            <button type="button" onClick={() => void handleNameSave()} disabled={!canSaveName} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
+              {nameStatus === "saving" ? "Guardando..." : "Guardar cambios"}
+            </button>
+          </div>
+        </ModalFrame>
+      ) : null}
+
+      {verifyModalOpen ? (
+        <ModalFrame title={verifyStatus === "sent" ? "Correo enviado" : "Verificar correo"} onClose={closeVerifyModal}>
+          {verifyStatus === "sent" ? (
+            <>
+              <p className="mt-3 text-sm text-zinc-300">Te enviamos un correo de verificación a <strong>{appUser.email}</strong>. Revisa tu bandeja de entrada para continuar.</p>
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <button type="button" onClick={closeVerifyModal} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110">Entendido</button>
               </div>
-            )}
-            {verifyStatus === "error" && (
-              <p className="mt-4 text-sm text-rose-400">No pudimos enviar el correo. Intenta más tarde.</p>
-            )}
-            <div className="mt-6 flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={closeVerifyModal}
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
-              >
-                {verifyStatus === "sent" ? "Cerrar" : "Cancelar"}
-              </button>
-              {verifyStatus !== "sent" && (
-                <button
-                  type="button"
-                  onClick={handleSendVerification}
-                  disabled={verifyStatus === "sending"}
-                  className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60"
-                >
+            </>
+          ) : (
+            <>
+              <p className="mt-3 text-sm text-zinc-400">Se enviará un correo de verificación a <strong>{appUser.email}</strong>.</p>
+              {verifyStatus === "error" ? <p className="mt-4 text-sm text-rose-400">No pudimos enviar el correo. Intenta más tarde.</p> : null}
+              <div className="mt-6 flex items-center justify-between gap-3">
+                <button type="button" onClick={closeVerifyModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
+                <button type="button" onClick={() => void handleSendVerification()} disabled={verifyStatus === "sending"} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
                   {verifyStatus === "sending" ? "Enviando..." : "Enviar correo"}
                 </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+              </div>
+            </>
+          )}
+        </ModalFrame>
+      ) : null}
     </main>
   );
 }
