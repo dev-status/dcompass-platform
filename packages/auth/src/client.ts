@@ -14,7 +14,8 @@ export const firebaseEnvSchema = z.object({
   NEXT_PUBLIC_FIREBASE_API_KEY: z.string().min(1),
   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().min(1),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1)
+  NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().min(1).optional()
 });
 
 export type FirebaseEnv = z.infer<typeof firebaseEnvSchema>;
@@ -52,7 +53,7 @@ export function buildFirebaseOptions(env: Partial<FirebaseEnv>): FirebaseOptions
     authDomain: sanitized.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     projectId: sanitized.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     appId: sanitized.NEXT_PUBLIC_FIREBASE_APP_ID,
-    storageBucket: `${sanitized.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`
+    storageBucket: sanitized.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${sanitized.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`
   };
 }
 
