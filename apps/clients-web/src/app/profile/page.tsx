@@ -167,6 +167,29 @@ function ModalFrame({ title, children, onClose }: { title: string; children: Rea
   );
 }
 
+function PrimaryButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.8rem] font-semibold text-white shadow-[0_18px_45px_rgba(130,89,208,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+      style={{ background: colors.accent }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({ children, className = '', ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      className={`inline-flex items-center gap-2 rounded-full border border-white/14 px-4 py-2 text-[0.8rem] font-medium text-zinc-200 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function ProfilePage() {
   const { appUser, firebaseUser, loading, logout, loadingState, setAppUser } = useAuth();
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
@@ -374,14 +397,6 @@ export default function ProfilePage() {
               {memberSince ? <p className="text-sm text-zinc-400">Miembro desde {memberSince}</p> : null}
             </div>
 
-            <button
-              type="button"
-              onClick={() => void logout()}
-              disabled={loadingState === "logout"}
-              className="ml-auto rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50 disabled:opacity-60"
-            >
-              {loadingState === "logout" ? "Cerrando..." : "Cerrar sesión"}
-            </button>
           </div>
 
           {photoError && !photoModalOpen ? (
@@ -395,13 +410,19 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-amber-100">Tu correo aún no está verificado.</p>
                   <p className="text-sm leading-relaxed text-amber-50/85">Verifícalo para darle más seguridad a tu cuenta y dejar este paso completo desde el inicio.</p>
-                  <button type="button" onClick={openVerifyModal} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.8rem] font-semibold text-white shadow-[0_18px_45px_rgba(130,89,208,0.35)] transition hover:brightness-110" style={{ background: colors.accent }}>
+                  <PrimaryButton type="button" onClick={openVerifyModal}>
                     Verificar correo <FiArrowRight className="text-sm" />
-                  </button>
+                  </PrimaryButton>
                 </div>
               </div>
             </div>
           ) : null}
+
+          <div className="pt-2">
+            <SecondaryButton type="button" onClick={() => void logout()} disabled={loadingState === "logout"}>
+              {loadingState === "logout" ? "Cerrando sesión..." : "Cerrar sesión"}
+            </SecondaryButton>
+          </div>
         </section>
       </div>
 
@@ -413,10 +434,10 @@ export default function ProfilePage() {
           </div>
           {photoError ? <p className="mt-3 text-sm text-rose-400">{photoError}</p> : null}
           <div className="mt-6 flex items-center justify-end gap-3">
-            <button type="button" onClick={closePhotoModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
-            <button type="button" onClick={() => void handleSavePhoto()} disabled={photoStatus === "saving"} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
+            <SecondaryButton type="button" onClick={closePhotoModal}>Cancelar</SecondaryButton>
+            <PrimaryButton type="button" onClick={() => void handleSavePhoto()} disabled={photoStatus === "saving"}>
               {photoStatus === "saving" ? "Guardando..." : "Guardar foto"}
-            </button>
+            </PrimaryButton>
           </div>
         </ModalFrame>
       ) : null}
@@ -427,10 +448,10 @@ export default function ProfilePage() {
           <input type="text" value={nameInput} onChange={(event) => setNameInput(event.target.value)} className="mt-4 w-full rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60" minLength={2} autoFocus />
           {nameError ? <p className="mt-3 text-sm text-rose-400">{nameError}</p> : null}
           <div className="mt-6 flex items-center justify-end gap-3">
-            <button type="button" onClick={closeNameModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
-            <button type="button" onClick={() => void handleNameSave()} disabled={!canSaveName} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
+            <SecondaryButton type="button" onClick={closeNameModal}>Cancelar</SecondaryButton>
+            <PrimaryButton type="button" onClick={() => void handleNameSave()} disabled={!canSaveName}>
               {nameStatus === "saving" ? "Guardando..." : "Guardar cambios"}
-            </button>
+            </PrimaryButton>
           </div>
         </ModalFrame>
       ) : null}
@@ -441,7 +462,7 @@ export default function ProfilePage() {
             <>
               <p className="mt-3 text-sm text-zinc-300">Te enviamos un correo de verificación a <strong>{appUser.email}</strong>. Revisa tu bandeja de entrada para continuar.</p>
               <div className="mt-6 flex items-center justify-end gap-3">
-                <button type="button" onClick={closeVerifyModal} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110">Entendido</button>
+                <PrimaryButton type="button" onClick={closeVerifyModal}>Entendido</PrimaryButton>
               </div>
             </>
           ) : (
@@ -449,10 +470,10 @@ export default function ProfilePage() {
               <p className="mt-3 text-sm text-zinc-400">Se enviará un correo de verificación a <strong>{appUser.email}</strong>.</p>
               {verifyStatus === "error" ? <p className="mt-4 text-sm text-rose-400">No pudimos enviar el correo. Intenta más tarde.</p> : null}
               <div className="mt-6 flex items-center justify-between gap-3">
-                <button type="button" onClick={closeVerifyModal} className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50">Cancelar</button>
-                <button type="button" onClick={() => void handleSendVerification()} disabled={verifyStatus === "sending"} className="rounded-full border border-white/10 bg-gradient-to-r from-[#7b4dff] to-[#e053ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:brightness-110 disabled:opacity-60">
+                <SecondaryButton type="button" onClick={closeVerifyModal}>Cancelar</SecondaryButton>
+                <PrimaryButton type="button" onClick={() => void handleSendVerification()} disabled={verifyStatus === "sending"}>
                   {verifyStatus === "sending" ? "Enviando..." : "Enviar correo"}
-                </button>
+                </PrimaryButton>
               </div>
             </>
           )}
