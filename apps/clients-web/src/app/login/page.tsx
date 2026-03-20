@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiLock, FiShield, FiStar } from "react-icons/fi";
+import { useAuth } from "@/components/auth-provider";
+import { FiAlertCircle, FiArrowLeft, FiArrowRight, FiCheckCircle, FiLock, FiShield, FiStar } from "react-icons/fi";
 
 const trustPoints = [
   "Accede para ver tus boletos y seguir tus próximos eventos.",
@@ -9,7 +14,63 @@ const trustPoints = [
   "Recupera tu cuenta fácilmente si algo cambia."
 ];
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const minPasswordLength = 8;
+
 export default function Page() {
+  const router = useRouter();
+  const { login, loading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const normalizedEmail = email.trim();
+
+  const validation = useMemo(() => {
+    const errors = {
+      email: normalizedEmail.length === 0 ? "Ingresa tu correo." : !emailRegex.test(normalizedEmail) ? "Ingresa un correo válido." : "",
+      password:
+        password.length === 0
+          ? "Ingresa tu contraseña."
+          : password.length < minPasswordLength
+            ? `Usa al menos ${minPasswordLength} caracteres.`
+            : ""
+    };
+
+    return {
+      errors,
+      isValid: Object.values(errors).every((value) => !value)
+    };
+  }, [normalizedEmail, password]);
+
+  const showError = (fieldError: string) => submitAttempted && Boolean(fieldError);
+
+  const inputClassName = (hasError: boolean) =>
+    `w-full rounded-2xl border bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25 ${
+      hasError ? "border-red-400/70" : "border-white/10"
+    }`;
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitAttempted(true);
+    setSubmitError(null);
+
+    if (!validation.isValid) {
+      return;
+    }
+
+    try {
+      await login({
+        email: normalizedEmail,
+        password
+      });
+      router.push("/");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "No se pudo iniciar sesión.");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#020308] text-white">
       <div className="pointer-events-none fixed inset-0">
@@ -88,79 +149,107 @@ export default function Page() {
 
               <div className="w-full max-w-[34rem] rounded-[2rem] border border-white/10 bg-white/[0.04] px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:px-8 sm:py-8 lg:px-10 lg:py-10">
                 <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                    <FiLock className="text-lg" />
+                  <div className="space-y-4">
+                    <div className="inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                      <FiLock className="text-lg" />
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="max-w-md text-base leading-relaxed text-zinc-300">
+                        Accede para ver tus boletos, guardar eventos y seguir tu próxima salida.
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <p className="max-w-md text-base leading-relaxed text-zinc-300">
-                      Accede para ver tus boletos, guardar eventos y seguir tu próxima salida.
-                    </p>
-                  </div>
-                </div>
-
-                <form className="space-y-5">
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-zinc-200">
-                      Correo electrónico
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="tu@correo.com"
-                      className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-4">
-                      <label htmlFor="password" className="text-sm font-medium text-zinc-200">
-                        Contraseña
+                  <form className="space-y-5" noValidate onSubmit={handleSubmit}>
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-sm font-medium text-zinc-200">
+                        Correo electrónico
                       </label>
-                      <a href="#login-help" className="text-sm transition hover:text-white" style={{ color: colors.accent }}>
-                        Olvidé mi contraseña
-                      </a>
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="tu@correo.com"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        aria-invalid={showError(validation.errors.email)}
+                        aria-describedby={showError(validation.errors.email) ? "email-error" : undefined}
+                        className={inputClassName(showError(validation.errors.email))}
+                      />
+                      {showError(validation.errors.email) ? (
+                        <p id="email-error" className="inline-flex items-center gap-2 text-sm text-red-300">
+                          <FiAlertCircle className="text-sm" />
+                          {validation.errors.email}
+                        </p>
+                      ) : null}
                     </div>
-                    <input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-white/25"
-                    />
-                  </div>
 
-                  <button
-                    type="submit"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.92rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110"
-                    style={{ background: colors.accent }}
-                  >
-                    Entrar
-                    <FiArrowRight className="text-sm" />
-                  </button>
-                </form>
-
-                <div className="grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                    <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                      <FiShield className="text-base" />
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-4">
+                        <label htmlFor="password" className="text-sm font-medium text-zinc-200">
+                          Contraseña
+                        </label>
+                        <a href="#login-help" className="text-sm transition hover:text-white" style={{ color: colors.accent }}>
+                          Olvidé mi contraseña
+                        </a>
+                      </div>
+                      <input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        aria-invalid={showError(validation.errors.password)}
+                        aria-describedby={showError(validation.errors.password) ? "password-error" : undefined}
+                        className={inputClassName(showError(validation.errors.password))}
+                      />
+                      {showError(validation.errors.password) ? (
+                        <p id="password-error" className="inline-flex items-center gap-2 text-sm text-red-300">
+                          <FiAlertCircle className="text-sm" />
+                          {validation.errors.password}
+                        </p>
+                      ) : null}
                     </div>
-                    <h3 className="text-base font-semibold text-white">Acceso seguro</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                      Tu cuenta y tus accesos permanecen protegidos en cada entrada.
-                    </p>
-                  </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                    <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
-                      <FiStar className="text-base" />
+                    {submitError ? (
+                      <p className="inline-flex items-center gap-2 text-sm text-red-300">
+                        <FiAlertCircle className="text-sm" />
+                        {submitError}
+                      </p>
+                    ) : null}
+
+                    <button
+                      type="submit"
+                      disabled={!validation.isValid || loading}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.92rem] font-semibold tracking-[0.01em] text-white shadow-[0_18px_45px_rgba(130,89,208,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:brightness-100"
+                      style={{ background: colors.accent }}
+                    >
+                      {loading ? "Entrando..." : "Entrar"}
+                      <FiArrowRight className="text-sm" />
+                    </button>
+                  </form>
+
+                  <div className="grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+                      <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                        <FiShield className="text-base" />
+                      </div>
+                      <h3 className="text-base font-semibold text-white">Acceso seguro</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                        Tu cuenta y tus accesos permanecen protegidos en cada entrada.
+                      </p>
                     </div>
-                    <h3 className="text-base font-semibold text-white">Todo en un solo lugar</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                      Boletos, eventos guardados y próximos planes, todo más a la mano.
-                    </p>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+                      <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/[0.05] p-3" style={{ color: colors.accent }}>
+                        <FiStar className="text-base" />
+                      </div>
+                      <h3 className="text-base font-semibold text-white">Todo en un solo lugar</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                        Boletos, eventos guardados y próximos planes, todo más a la mano.
+                      </p>
+                    </div>
                   </div>
-                </div>
 
                   <div className="flex flex-col gap-3 border-t border-white/10 pt-5 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
                     <p>
