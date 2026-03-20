@@ -2,9 +2,14 @@ import axios from "axios";
 import { http } from "@/lib/http";
 import type { SessionResponse } from "@dcompass/auth/client";
 
-export async function createAuthSession(idToken: string): Promise<SessionResponse> {
+interface CreateAuthSessionInput {
+  idToken: string;
+  fullName?: string;
+}
+
+export async function createAuthSession(input: CreateAuthSessionInput): Promise<SessionResponse> {
   try {
-    const response = await http.post<SessionResponse>("/auth/session", { idToken });
+    const response = await http.post<SessionResponse>("/auth/session", input);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError<{ error?: string }>(error)) {

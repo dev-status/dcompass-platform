@@ -25,7 +25,7 @@ export interface LoginWithEmailInput {
 }
 
 export interface SignUpWithEmailInput extends LoginWithEmailInput {
-  fullName?: string;
+  fullName: string;
 }
 
 export interface SessionResponse {
@@ -73,7 +73,7 @@ export function getFirebaseClientAuth(env: Partial<FirebaseEnv>): Auth {
   return getFirebaseAuth(ensureFirebaseApp(env));
 }
 
-export async function signUpWithEmail(env: Partial<FirebaseEnv>, input: SignUpWithEmailInput) {
+export async function signUpWithEmail(env: Partial<FirebaseEnv>, input: LoginWithEmailInput) {
   const auth = getFirebaseClientAuth(env);
   return createUserWithEmailAndPassword(auth, input.email.trim(), input.password);
 }

@@ -13,19 +13,25 @@ const firebaseAdminEnv: Partial<FirebaseAdminEnv> = {
 };
 
 const requestSchema = z.object({
-  idToken: z.string().min(1)
+  idToken: z.string().min(1),
+  fullName: z.string().trim().min(1).optional()
 });
 
-function buildFullName(decodedToken: {
-  name?: string;
+function buildFullName(input: {
+  fullName?: string;
+  decodedName?: string;
   email?: string;
 }) {
-  if (decodedToken.name?.trim()) {
-    return decodedToken.name.trim();
+  if (input.fullName?.trim()) {
+    return input.fullName.trim();
   }
 
-  if (decodedToken.email?.trim()) {
-    return decodedToken.email.split("@")[0] ?? "Usuario DCompass";
+  if (input.decodedName?.trim()) {
+    return input.decodedName.trim();
+  }
+
+  if (input.email?.trim()) {
+    return input.email.split("@")[0] ?? "Usuario DCompass";
   }
 
   return "Usuario DCompass";
@@ -50,7 +56,11 @@ export const POST = createRouteHandler({
       firebaseUid: decodedToken.uid,
       email: decodedToken.email,
       emailVerified: Boolean(decodedToken.email_verified),
-      fullName: buildFullName(decodedToken),
+      fullName: buildFullName({
+        fullName: body.fullName,
+        decodedName: decodedToken.name,
+        email: decodedToken.email
+      }),
       phone: decodedToken.phone_number ?? null,
       avatarUrl: decodedToken.picture ?? null
     });
