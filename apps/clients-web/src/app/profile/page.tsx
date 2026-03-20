@@ -469,7 +469,7 @@ export default function ProfilePage() {
             <>
               <p className="mt-3 text-sm text-zinc-400">Se enviará un correo de verificación a <strong>{appUser.email}</strong>.</p>
               {verifyStatus === "error" ? <p className="mt-4 text-sm text-rose-400">No pudimos enviar el correo. Intenta más tarde.</p> : null}
-              <div className="mt-6 flex items-center justify-between gap-3">
+              <div className="mt-6 flex items-center justify-end gap-3">
                 <SecondaryButton type="button" onClick={closeVerifyModal}>Cancelar</SecondaryButton>
                 <PrimaryButton type="button" onClick={() => void handleSendVerification()} disabled={verifyStatus === "sending"}>
                   {verifyStatus === "sending" ? "Enviando..." : "Enviar correo"}
