@@ -51,6 +51,23 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   });
 }
 
+export async function getAuthenticatedUser(params: {
+  firebaseUid: string;
+  email?: string | null;
+}): Promise<User | null> {
+  const byFirebaseUid = await getCurrentUserByFirebaseUid(params.firebaseUid);
+
+  if (byFirebaseUid) {
+    return byFirebaseUid;
+  }
+
+  if (params.email?.trim()) {
+    return findUserByEmail(params.email);
+  }
+
+  return null;
+}
+
 export async function listUsers(args?: Prisma.UserFindManyArgs): Promise<User[]> {
   return prisma.user.findMany(args);
 }

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User as FirebaseUser } from "firebase/auth";
-import { loginAndSync, logout, signUpAndSync, syncSessionFromFirebaseUserIdToken, watchFirebaseAuthState } from "@/lib/auth";
+import { getCurrentSessionFromFirebaseUserIdToken, loginAndSync, logout, signUpAndSync, watchFirebaseAuthState } from "@/lib/auth";
 
 export interface AppUser {
   id: string;
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const idToken = await nextFirebaseUser.getIdToken();
-        const session = await syncSessionFromFirebaseUserIdToken(idToken);
+        const session = await getCurrentSessionFromFirebaseUserIdToken(idToken);
         setAppUser(session.user);
       } catch (error) {
         console.error("Failed to restore auth session", error);

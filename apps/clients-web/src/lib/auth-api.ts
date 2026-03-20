@@ -19,3 +19,21 @@ export async function createAuthSession(input: CreateAuthSessionInput): Promise<
     throw error;
   }
 }
+
+export async function getCurrentAuthSession(idToken: string): Promise<SessionResponse> {
+  try {
+    const response = await http.get<SessionResponse>("/auth/session", {
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError<{ error?: string }>(error)) {
+      throw new Error(error.response?.data?.error ?? "No se pudo obtener la sesión actual.");
+    }
+
+    throw error;
+  }
+}

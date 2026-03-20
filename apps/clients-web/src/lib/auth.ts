@@ -7,7 +7,7 @@ import {
   type SignUpWithEmailInput,
   type SessionResponse
 } from "@dcompass/auth/client";
-import { createAuthSession } from "@/lib/auth-api";
+import { createAuthSession, getCurrentAuthSession } from "@/lib/auth-api";
 import { firebaseEnv } from "@/lib/firebase/config";
 
 export async function signUpAndSync(input: SignUpWithEmailInput): Promise<SessionResponse> {
@@ -32,8 +32,8 @@ export async function logout(): Promise<void> {
   await logoutClient(firebaseEnv);
 }
 
-export async function syncSessionFromFirebaseUserIdToken(idToken: string): Promise<SessionResponse> {
-  return createAuthSession({ idToken });
+export async function getCurrentSessionFromFirebaseUserIdToken(idToken: string): Promise<SessionResponse> {
+  return getCurrentAuthSession(idToken);
 }
 
 export function watchFirebaseAuthState(callback: Parameters<typeof subscribeToAuthState>[1]) {
