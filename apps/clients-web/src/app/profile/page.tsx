@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FirebaseError } from "firebase/app";
 import { colors } from "@dcompass/ui";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmailVerification } from "firebase/auth";
-import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiEdit3, FiX } from "react-icons/fi";
+import { FiAlertCircle, FiArrowRight, FiEdit3, FiX } from "react-icons/fi";
 import { firebaseStorage } from "@/lib/firebase/client";
 import { updateProfile } from "@/lib/auth-api";
 import { useAuth } from "@/components/auth-provider";
@@ -25,6 +26,98 @@ function formatMemberSince(value?: string) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return null;
   return memberSinceFormatter.format(parsed);
+}
+
+const VALID_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
+const VALID_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_AVATAR_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_AVATAR_DIMENSION = 512;
+const AVATAR_OUTPUT_QUALITY = 0.85;
+const DEFAULT_STORAGE_ERROR_MESSAGE = "Ocurrió un error. Inténtalo más tarde.";
+const FIREBASE_STORAGE_ERROR_MESSAGES: Record<string, string> = {
+  "storage/unauthenticated": "Necesitas iniciar sesión para actualizar tu foto.",
+  "storage/unauthorized": "No tienes permiso para cambiar esta imagen.",
+  "storage/quota-exceeded": "Has alcanzado el límite de almacenamiento.",
+  "storage/retry-limit-exceeded": "No pudimos subir tu imagen. Intenta de nuevo.",
+  "storage/canceled": "La subida fue cancelada.",
+  "storage/invalid-checksum": "El archivo no se pudo verificar.",
+  "storage/object-not-found": "No pudimos encontrar el archivo para actualizar.",
+  "storage/bucket-not-found": "No pudimos acceder al almacenamiento.",
+  "storage/project-not-found": "No pudimos encontrar el proyecto de Firebase.",
+  "storage/unknown": DEFAULT_STORAGE_ERROR_MESSAGE
+};
+
+function getFileExtension(fileName: string) {
+  const match = fileName.toLowerCase().match(/\.([^.]+)$/);
+  return match?.[1] ?? "";
+}
+
+function getExtensionFromMimeType(mimeType: string) {
+  const normalized = mimeType.toLowerCase();
+  if (normalized === "image/jpeg" || normalized === "image/jpg") return "jpg";
+  if (normalized === "image/png") return "png";
+  if (normalized === "image/webp") return "webp";
+  return "jpg";
+}
+
+function validatePhotoFile(file: File) {
+  const normalizedMime = file.type.toLowerCase();
+  if (
+    !VALID_IMAGE_EXTENSIONS.includes(getFileExtension(file.name)) &&
+    !VALID_IMAGE_MIME_TYPES.includes(normalizedMime)
+  ) {
+    return "Solo se permiten imágenes en formato JPG, PNG o WEBP.";
+  }
+
+  if (file.size > MAX_AVATAR_FILE_SIZE_BYTES) {
+    return "La imagen no debe pesar más de 5 MB.";
+  }
+
+  return null;
+}
+
+async function prepareAvatarFile(file: File) {
+  const bitmap = await createImageBitmap(file);
+  const ratio = Math.min(1, MAX_AVATAR_DIMENSION / bitmap.width, MAX_AVATAR_DIMENSION / bitmap.height);
+  const width = Math.max(1, Math.round(bitmap.width * ratio));
+  const height = Math.max(1, Math.round(bitmap.height * ratio));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    bitmap.close();
+    throw new Error("No se pudo procesar la imagen.");
+  }
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const outputType = file.type || "image/jpeg";
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (result) => {
+        if (!result) {
+          reject(new Error("No se pudo procesar la imagen."));
+          return;
+        }
+        resolve(result);
+      },
+      outputType,
+      AVATAR_OUTPUT_QUALITY
+    );
+  });
+
+  return new File([blob], file.name, { type: blob.type || outputType });
+}
+
+function getFriendlyFirebaseStorageErrorMessage(error: unknown) {
+  if (error instanceof FirebaseError) {
+    return FIREBASE_STORAGE_ERROR_MESSAGES[error.code] ?? DEFAULT_STORAGE_ERROR_MESSAGE;
+  }
+
+  return DEFAULT_STORAGE_ERROR_MESSAGE;
 }
 
 function getInitials(fullName?: string) {
@@ -97,7 +190,6 @@ export default function ProfilePage() {
     };
   }, [selectedPhoto]);
 
-  const initials = useMemo(() => getInitials(appUser?.fullName), [appUser?.fullName]);
   const memberSince = useMemo(() => formatMemberSince(appUser?.createdAt), [appUser?.createdAt]);
   const originalName = appUser?.fullName ?? "";
   const normalizedName = nameInput.trim();
@@ -109,6 +201,17 @@ export default function ProfilePage() {
   const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const validationError = validatePhotoFile(file);
+    if (validationError) {
+      setSelectedPhoto(null);
+      setPhotoError(validationError);
+      setPhotoStatus("idle");
+      setPhotoModalOpen(false);
+      event.target.value = "";
+      return;
+    }
+
     const url = URL.createObjectURL(file);
     setSelectedPhoto({ file, url, name: file.name });
     setPhotoError(null);
@@ -164,16 +267,23 @@ export default function ProfilePage() {
     setPhotoError(null);
 
     try {
-      const extension = selectedPhoto.file.name.split(".").pop() || "jpg";
+      const optimizedFile = await prepareAvatarFile(selectedPhoto.file);
+      const extension = getExtensionFromMimeType(optimizedFile.type);
       const storageRef = ref(firebaseStorage, `users/${appUser.firebaseUid ?? appUser.id}/avatar.${extension}`);
-      await uploadBytes(storageRef, selectedPhoto.file, { contentType: selectedPhoto.file.type });
+      await uploadBytes(storageRef, optimizedFile, { contentType: optimizedFile.type });
       const avatarUrl = await getDownloadURL(storageRef);
       const idToken = await firebaseUser.getIdToken();
       const session = await updateProfile({ idToken, avatarUrl });
       setAppUser(session.user);
       closePhotoModal();
     } catch (error) {
-      setPhotoError(error instanceof Error ? error.message : "No se pudo actualizar tu foto.");
+      const friendlyMessage =
+        error instanceof FirebaseError
+          ? getFriendlyFirebaseStorageErrorMessage(error)
+          : error instanceof Error
+            ? error.message
+            : DEFAULT_STORAGE_ERROR_MESSAGE;
+      setPhotoError(friendlyMessage);
       setPhotoStatus("error");
     }
   };
@@ -238,7 +348,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+        <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.webp" className="hidden" onChange={handlePhotoChange} />
 
         <section className="space-y-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
@@ -273,6 +383,10 @@ export default function ProfilePage() {
               {loadingState === "logout" ? "Cerrando..." : "Cerrar sesión"}
             </button>
           </div>
+
+          {photoError && !photoModalOpen ? (
+            <p className="text-sm text-rose-400">{photoError}</p>
+          ) : null}
 
           {!appUser.emailVerified ? (
             <div className="max-w-2xl rounded-[1.5rem] border border-amber-400/20 bg-amber-400/10 p-4">
