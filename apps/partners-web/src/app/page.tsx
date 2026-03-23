@@ -18,12 +18,12 @@ import {
   FiSearch,
   FiShield,
   FiSettings,
-  FiTicket,
   FiUser,
   FiUserCheck,
   FiUsers
 } from "react-icons/fi";
 import { brandAssets, StatusBadge } from "@dcompass/ui";
+import type { StatusTone } from "@dcompass/ui";
 
 type Role = "partner" | "admin";
 
@@ -36,7 +36,7 @@ type MenuItem = {
 const partnerMenu: MenuItem[] = [
   { label: "Inicio", icon: FiHome },
   { label: "Eventos", icon: FiCalendar },
-  { label: "Boletos", icon: FiTicket },
+  { label: "Boletos", icon: FiCreditCard },
   { label: "Equipo", icon: FiUsers },
   { label: "Reportes", icon: FiBarChart2 },
   { label: "Configuración", icon: FiSettings }
@@ -72,7 +72,7 @@ const adminHighlights = [
   { label: "Incidentes críticos", value: "3", delta: "resueltos 1h" }
 ];
 
-const adminSignals = [
+const adminSignals: { label: string; value: string; tone: StatusTone }[] = [
   { label: "Alertas de integridad", value: "3", tone: "warning" },
   { label: "Últimos accesos", value: "12 hrs", tone: "positive" },
   { label: "Órdenes pendientes", value: "42", tone: "info" }
