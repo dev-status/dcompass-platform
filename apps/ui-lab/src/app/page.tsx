@@ -2,7 +2,11 @@ import Link from "next/link";
 
 const screens = [
   { href: "/ticket-selection", title: "Ticket selection", description: "Inicio del flujo de compra / selección de boletos" },
-  { href: "/checkout", title: "Checkout", description: "Continuar compra para usuario ya autenticado" }
+  { href: "/checkout", title: "Checkout", description: "Continuar compra para usuario ya autenticado" },
+  { href: "/partners-login", title: "Partners login", description: "Propuesta desktop-first para la pantalla de acceso a partners-web" },
+  { href: "/partners-home", title: "Partners home", description: "Propuesta de consola principal con sidebar colapsable, cabecera operativa y adaptación mobile" },
+  { href: "/admin-login", title: "Admin login", description: "Propuesta desktop-first para el acceso al panel administrativo" },
+  { href: "/admin-home", title: "Admin home", description: "Propuesta de consola de control global con módulos administrativos y alertas del sistema" }
 ];
 
 export default function Page() {
