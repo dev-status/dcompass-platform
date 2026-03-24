@@ -121,12 +121,21 @@ importers:
 
   apps/partners-web:
     dependencies:
+      '@dcompass/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@dcompass/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@dcompass/domain':
         specifier: workspace:*
         version: link:../../packages/domain
       '@dcompass/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@prisma/client':
+        specifier: ^5.22.0
+        version: 5.22.0(prisma@5.22.0)
       next:
         specifier: 16.1.7
         version: 16.1.7(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -136,6 +145,12 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      react-icons:
+        specifier: ^5.6.0
+        version: 5.6.0(react@19.2.3)
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
