@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { brandAssets, colors } from "@dcompass/ui";
-import { FiArrowLeft, FiArrowRight, FiCalendar, FiClock, FiFilter, FiMapPin, FiMenu, FiSearch, FiSliders, FiX } from "react-icons/fi";
 import { useState } from "react";
+import { brandAssets, colors } from "@dcompass/ui";
+import { FiArrowLeft, FiArrowRight, FiCalendar, FiFilter, FiMapPin, FiMenu, FiSearch, FiSliders, FiX } from "react-icons/fi";
+import EventCard from "../../components/EventCard";
+import { eventShowcase } from "../../data/events";
 
 const navLinks = [
   { label: "Inicio", href: "#top" },
@@ -14,63 +16,6 @@ const navLinks = [
 ];
 
 const quickFilters = ["Hoy", "Esta semana", "CDMX", "DJ Sets", "Bar", "Live"];
-
-const events = [
-  {
-    title: "Noches en Supra Roma",
-    category: "DJ Set · Roma Norte",
-    date: "Vie 22 Mar · 10:00 PM",
-    location: "CDMX",
-    price: "Desde $280 MXN",
-    status: "Entradas disponibles",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Casa Aurora Sessions",
-    category: "Live Set · Condesa",
-    date: "Sáb 23 Mar · 9:30 PM",
-    location: "CDMX",
-    price: "Desde $350 MXN",
-    status: "Últimos accesos",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Session 03 Juárez",
-    category: "Bar Session · Juárez",
-    date: "Jue 28 Mar · 8:30 PM",
-    location: "CDMX",
-    price: "Desde $240 MXN",
-    status: "Preventa activa",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Late Room Coyoacán",
-    category: "Selector Night · Coyoacán",
-    date: "Vie 29 Mar · 9:00 PM",
-    location: "CDMX",
-    price: "Desde $300 MXN",
-    status: "Entradas disponibles",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Azotea 9",
-    category: "Rooftop Session · Juárez",
-    date: "Sáb 30 Mar · 6:00 PM",
-    location: "CDMX",
-    price: "Desde $420 MXN",
-    status: "Últimos accesos",
-    image: "/hero/hero-v2.png"
-  },
-  {
-    title: "Room 12 After Hours",
-    category: "Afterhours · Roma",
-    date: "Dom 31 Mar · 1:00 AM",
-    location: "CDMX",
-    price: "Desde $260 MXN",
-    status: "Preventa activa",
-    image: "/hero/hero-v2.png"
-  }
-];
 
 export default function Page() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -222,49 +167,14 @@ export default function Page() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {events.map((event) => (
-                <article key={event.title} className="overflow-hidden rounded-[1.7rem] border border-white/10 bg-white/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
-                  <div className="relative aspect-[16/10] w-full">
-                    <Image src={event.image} alt={event.title} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,3,8,0.04),rgba(2,3,8,0.5))]" />
-                  </div>
-
-                  <div className="space-y-5 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-[0.72rem] tracking-[0.01em] text-zinc-500">{event.category}</p>
-                        <h3 className="mt-2 text-xl font-semibold text-white">{event.title}</h3>
-                      </div>
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-[0.72rem] tracking-[0.01em] text-zinc-300">
-                        {event.status}
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 text-sm text-zinc-300">
-                      <p className="flex items-center gap-2">
-                        <FiClock className="text-sm" />
-                        {event.date}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <FiMapPin className="text-sm" />
-                        {event.location}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                      <p className="text-sm font-medium text-white">{event.price}</p>
-                      <Link href="/events/demo" className="text-sm font-medium transition hover:text-white" style={{ color: colors.accent }}>
-                        Ver evento
-                      </Link>
-                    </div>
-                  </div>
-                </article>
+              {eventShowcase.map((event) => (
+                <EventCard key={event.id} event={event} />
               ))}
             </div>
           </section>
 
           <div className="flex items-center justify-between rounded-[1.7rem] border border-white/10 bg-white/[0.035] px-5 py-4 text-sm text-zinc-300">
-            <span>Mostrando 6 de 24 eventos</span>
+            <span>Mostrando {eventShowcase.length} eventos</span>
             <button className="inline-flex items-center gap-2 font-medium transition hover:text-white" style={{ color: colors.accent }}>
               Ver más resultados
               <FiArrowRight className="text-sm" />
